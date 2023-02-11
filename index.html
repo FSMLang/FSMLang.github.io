@@ -1,0 +1,527 @@
+<html>
+<head>
+<title>FSMLang</title>
+<link rel="stylesheet" href="fsmlangweb.css"/>
+</head>
+<body>
+
+<div class="overview">
+
+<h1>FSMLang</h1>
+
+    <p>Current revision is 1.30</p>
+
+<div id="TOC">
+<ul>
+<li><a href="#Philosophy">Philosophy</a>
+	<ul>
+	<li><a href="#Simple">Simple</a>
+	<li><a href="#Hierarchical">Hierarchical</a>
+  </ul>
+</li>
+<li><a href="#Making the fsm Executable">Making the fsm Executable</a></li>
+<li><a href="#Command Syntax">Command Syntax</a></li>
+<li><a href="#Basic Language Syntax">Basic Language Syntax</a></li>
+<li><a href="release_notes.html">Release Notes</a></li>
+<li><a href="issues.html">Issues</a></li>
+<!-- <li><a href="dlfile.php" target="_blank">Download Windows Executable, rev. 1.26</a></li> -->
+</ul>
+</div>
+
+<h2 id="Philosophy">Philosophy</h2>
+<a href="#TOC">Back to TOC</a>
+
+<p>FSMLang is designed to allow design work in the problem space of finite 
+state machines without the encumbrances of any particular implementation 
+language. Thus, FSMLang is implemented as a "pre-processor," generating 
+code in any desired general programming language to implement the described 
+finite state machine. FSMLang allows effort to be focused on the definition 
+of events, states, and transitions; indeed, though the action to be taken 
+in any particular event/state intersection is declarable (of course), the 
+actual definition of that action is treated as a detail which falls outside 
+the scope of FSMLang.  Moreover, the mechanisms for collecting or 
+determining events are also outside the language scope.  FSMLang creates an 
+object or objects in a target programming language which, when inserted 
+into the larger program structure will invoke the correct actions and make 
+the correct transitions for the events handed it.
+</p>
+
+<p>(Though it is said, "any desired general programming language," implementation of 
+FSMLang output in languages other than C is an exercise currently left to 
+the reader.)
+</p>
+
+<h3 id="Simple">Example: Simple State Machine</h3>
+<a href="#Philosophy">Back to Philosophy</a>
+
+<p>As an example, consider a simple communications protocol which specifies 
+that an acknowledgement must be received for each message before another 
+may be sent.  The sender of messages in such a protocol must have at least 
+two states: In the first state, which will be called IDLE, the sender has 
+sent no message.  In the second, which will be called AWAITING_ACK, the 
+sender has sent a message and is awaiting an acknowledgement. The events 
+which this automaton will see are SEND_MESSAGE, the request by a client 
+entity for a message to be sent, and ACK, the receipt of the acknowledgment 
+from the peer automaton.
+</p>
+
+<p>The valid actions, then, are to send a message if one is requested, and the 
+automaton is in the IDLE state,and to simply return to the IDLE state if an 
+ACK is received while in the AWAITING_ACK state.  Sending a message 
+requires a transition to the AWAITING_ACK state. The receipt of an 
+acknowledgement while in the IDLE state represents a protocol error which 
+may be safely ignored.  A request to send a message while in the AWAITING_
+ACK state, however, must result in the message being queued for later transmission.
+</p>
+
+<p>Using FSMLang, this machine can be described this way:
+</p>
+
+<code>
+/**
+   This machine manages communications using a "stop and wait" protocol.
+      Only one message is allowed to be outstanding.
+*/
+<span class="keyword">machine</span> simpleCommunicator
+{
+
+  <span class="keyword">state</span> IDLE,
+        AWAITING_ACK;
+
+  <span class="keyword">event</span> SEND_MESSAGE,
+        ACK;
+
+  /**
+   Transmit message to the peer.
+  */
+  <span class="keyword">action</span> sendMessage[SEND_MESSAGE,IDLE] <span class="keyword">transition</span> AWAITING_ACK;
+
+  /**
+   Place message into queue.
+  */
+  <span class="keyword">action</span> queueMessage[SEND_MESSAGE,AWAITING_ACK];
+
+  /**
+   Check queue for messages; if found pop from queue and return SEND_MESSAGE.
+   If no message is found in the queue return noEvent.
+  */
+  <span class="keyword">action</span> checkQueue[ACK,AWAITING_ACK] <span class="keyword">transition</span> IDLE;
+
+  /* these lines are informational; they affect the html output,
+      but do not affect any code generated.
+  */
+  queueMessage <span class="keyword">returns</span> noEvent;
+  sendMessage  <span class="keyword">returns</span> noEvent;
+  checkQueue   <span class="keyword">returns</span> SEND_MESSAGE, noEvent;
+
+}
+</code>
+
+<p>(When no transition is specified, the machine remains in the state it was 
+in when the event occured.  And, a comma seperated list of events or states 
+enclosed within parentheses may be used in place of any single event or 
+state designation; in which case, the action specifed will be taken in the 
+"cross product" of the two (event and/or state) vectors so described.)
+</p>
+
+<h4>This is the header file created</h4>
+<iframe src="simpleCommunicator.h"></iframe>
+
+<h4>This is the source file created</h4>
+<iframe src="simpleCommunicator.c"></iframe>
+
+<h4>This is the HTML created</h4>
+<iframe src="simpleCommunicator.html"></iframe>
+
+<p>By default, action functions return events, and the main state macine function loops until an action
+indicates that there are no further events. 
+</p>
+
+<p>The action functions themselves are not generated; instead, they are written by the machine implementor. This allows FSMLang
+to remain focused on the state machine, rather than the details of the implementation of its purpose for existing.
+</p>
+
+<h3 id="Hierarchical">Hierarchical</h3>
+<a href="#Philosophy">Back to Philosophy</a>
+
+<p>A more complex example shows how FSMLang treats hierarchical state machines. We reuse the <i>Simple 
+Communicator</i> from the first example, but add the requirement to establish a session with the peer before any
+message is sent.  One way to do this is to have a top-level state machine with two sub state machines: One machine to
+establish the session; the other to send the messages, again with the requirement that only one message can be in transit
+at any time.
+</p>
+
+<p>The fsm code describes the machines in this way.  Note the similarity of the <i>sendMessage</i> sub machine to the
+<i>simpleCommunicator</i>, above.
+</p>
+
+<code>
+/**
+   <p>This machine manages communications using a "stop and wait" protocol.
+      Only one message is allowed to be outstanding.
+	 </p>
+
+	 <p>Before any message can be exchanged, however, a session must be established
+      with the peer.  Establishing a connection requires several exchanges to
+      authenticate.  The connection will remain active as long as messages
+      continue to be exchanged with a minimum frequency.
+   </p>
+*/
+<span class="keyword">machine</span> hsmCommunicator {
+
+	<span class="keyword">state</span> IDLE,
+        ESTABLISHING_SESSION,
+        IN_SESSION;
+
+	<span class="keyword">event</span> SEND_MESSAGE,
+        SESSION_ESTABLISHED,
+        SESSION_TIMEOUT;
+
+	/**
+		Establish a connection with the peer.
+  */
+	<span class="keyword">machine</span> establishSession {
+
+		<span class="keyword">state</span> IDLE,
+					AWAITING_RESPONSE;
+
+		<span class="keyword">event</span> ESTABLISH_SESSION_REQUEST,
+ 					STEP0_RESPONSE,
+					STEP1_RESPONSE;
+
+		/**
+			Start the session establishment process.
+		*/
+		<span class="keyword">action</span> sendStep0Message[ESTABLISH_SESSION_REQUEST, IDLE] <span class="keyword">transition</span> AWAITING_RESPONSE;
+
+		/**
+			Continue session establisment
+		*/
+		<span class="keyword">action</span> sendStep1Message[STEP0_RESPONSE, AWAITING_RESPONSE];
+
+		/**
+			Notify parent that session is established.
+		*/
+		<span class="keyword">action</span> notifyParent[STEP1_RESPONSE, AWAITING_RESPONSE] <span class="keyword">transition</span> IDLE;
+
+	  /* these lines are informational; they affect the html output,
+	      but do not affect any C code generated.
+		*/
+		sendStep0Message <span class="keyword">returns</span> noEvent;
+		sendStep1Message <span class="keyword">returns</span> noEvent;
+		notifyParent     <span class="keyword">returns</span> parent::SESSION_ESTABLISHED;
+
+	}
+
+	<span class="keyword">machine</span> sendMessage {
+
+		<span class="keyword">state</span>	IDLE,
+ 				IN_SESSION,
+				AWAITING_ACK;
+
+		<span class="keyword">event</span>	SEND_MESSAGE,
+				ACK,
+				SESSION_ESTABLISHED,
+				SESSION_TIMEOUT;
+
+		/**
+			Transmit message to the peer.
+		*/
+		<span class="keyword">action</span>	sendMessage[SEND_MESSAGE,IN_SESSION] <span class="keyword">transition</span> AWAITING_ACK;
+
+		/**
+			Place message into queue.
+		*/
+		<span class="keyword">action</span>	queueMessage[SEND_MESSAGE,(IDLE, AWAITING_ACK)];
+
+		/**
+			Check queue for messages; if found pop from queue and return SEND_MESSAGE.
+			If no message is found in the queue return noEvent.
+		*/
+		<span class="keyword">action</span>	checkQueue[ACK,AWAITING_ACK]          <span class="keyword">transition</span> IN_SESSION,
+		         checkQueue[SESSION_ESTABLISHED, IDLE] <span class="keyword">transition</span> IN_SESSION;
+
+
+		<span class="keyword">transition</span> [SESSION_TIMEOUT, (IN_SESSION, AWAITING_ACK)] IDLE;
+
+		/* these lines are informational; they affect the html output,
+			but do not affect any C code generated.
+		*/
+		queueMessage <span class="keyword">returns</span> noEvent;
+		sendMessage  <span class="keyword">returns</span> noEvent;
+		checkQueue   <span class="keyword">returns</span> SEND_MESSAGE, noEvent;
+
+	}
+
+	/* these are actions of the top level machine */
+
+	/**
+		Start the session establishment process by activating the <i>establishSession</i> machine.
+	*/
+	<span class="keyword">action</span> startSessionEstablishment[SEND_MESSAGE, IDLE] <span class="keyword">transition</span> ESTABLISHING_SESSION;
+
+	/**
+		Start the session timer and notify the <i>sendMessage</i> machine that the session is
+		 established.
+	*/
+	<span class="keyword">action</span> completeSessionStart[SESSION_ESTABLISHED, ESTABLISHING_SESSION] <span class="keyword">transition</span> IN_SESSION;
+
+	/**
+		Notify the <i>sendMessage</i> machine that the session has timed-out.
+	*/
+	<span class="keyword">action</span> notifySessionTimeout[SESSION_TIMEOUT, (ESTABLISHING_SESSION, IN_SESSION)] <span class="keyword">transition</span> IDLE;
+
+	/**
+		Extend the session timer and pass the message to be sent to the <i>sendMessage</i> machine.
+	*/
+	<span class="keyword">action</span> requestMessageTransmission[SEND_MESSAGE, (ESTABLISHING_SESSION, IN_SESSION)];
+
+
+	/* these lines are informational; they affect the html output,
+	    but do not affect any C code generated.
+	*/
+	startSessionEstablishment   <span class="keyword">returns</span> SEND_MESSAGE;
+	completeSessionStart        <span class="keyword">returns</span> sendMessage::SESSION_ESTABLISHED;
+	notifySessionTimeout        <span class="keyword">returns</span> sendMessage::SESSION_TIMEOUT;
+	requestMessageTransmission  <span class="keyword">returns</span> sendMessage::SEND_MESSAGE;
+
+}
+
+
+</code>
+
+<p>FSMLang produces one header/source file pair, or one html file for each machine it encounters.  The top-level machine's
+event enumeration contains the events of all machines so that any event can be passed to the machine.  Each sub-machine has
+its own enumeration, but these enumerations do not start at 0.  Rather, they are arranged so that each <i>noEvent</i> event
+has the same numeric value as the corresponding event in the top-level enumeration.  In this way, sub-machines are easily
+selected based on their numeric event range.
+</p>
+
+<p>The FSM function of a sub-machine returns a top-level machine event, providing the mechanism by which the sub-machines
+communicate with the top-level machine.  The return value of the sub-machine FSM function is the event returned by a
+sub-machine action function when that event is not a sub-machine event.  When the sub-machine action returns the
+sub-machine's <i>noEvent</i> that event is translated into the top-level machine's <i>noEvent</i>.
+</p>
+
+<p>FSMLang does not provide for sub-machines to indicate that their action functions return an event from another sub-machine.
+Rather, sub-machine actions can return events from their own machine, or from their parent. This is by design.
+The top-level machine should provide actions when necessary to bridge between the activation of different sub-machines.
+</p>
+
+<p>However, it is possible for a sub-machine to designate any event as being "from the parent" 
+(<span class="keyword"></span>event parent::</span>e1, for example).  The name, of course, must be that of an event actually
+declared in the parent.  Moreover, by also giving the name of a data translation function
+(<i>e.g.</i> <span class="keyword">event parent::</span>e1 <span class="keyword">data translator</span> dt1)  When this is done,
+FSMLang generates code for the parent to call the submachine when that event occurs.  If a data translator is given, it will be
+called before the sub-machine is invoked.  More than one sub-machine can share a parent event; the machines will be called in order.
+The loop will be exited when a machine returns anything other than <span class="keyword">noEvent</span>, so that the parent can
+then handle that event.
+</p>
+
+<p>It is possible, that the parent would want to inhibit the operation of the sub-machines.  <span class="keyword">state</span> s1
+<span class="keyword">inhibits submachines</span> will do just that; no submachines will be run, unless shared events exist and the
+parent handles those events in that state.</p>
+
+<p>The html file created for the top-level machine contains a list of sub-machines.  The list is hyper-linked to the html
+file for the respective machine.
+</p>
+
+<p>At the moment, only one level of sub-machine is supported.  This limitation may be removed in later releases.
+</p>
+
+<p>The -ts flag should always be used to generate code due the way the event enumerations are generated for sub-machines.  This limination,
+too, may be removed in later releases.</p>
+
+<h4>These are the header files created</h4>
+<iframe src="hsmCommunicator.h"></iframe>
+<iframe src="establishSession.h"></iframe>
+<iframe src="sendMessage.h"></iframe>
+
+<h4>These are the source files created</h4>
+<iframe src="hsmCommunicator.c"></iframe>
+<iframe src="establishSession.c"></iframe>
+<iframe src="sendMessage.c"></iframe>
+
+<h4>These are the html files created</h4>
+<iframe src="hsmCommunicator.html"></iframe>
+<iframe src="establishSession.html"></iframe>
+<iframe src="sendMessage.html"></iframe>
+
+<p>Note that the -tp option was used to create PlantUML output, which was then processed by <a href="https://plantuml.com/guide">plantuml</a> to produce an SVG image. The html
+was created using the --include-svg-img=true option to include the image in the output.
+</p>
+
+<p>An unrealized goal of the FSMLang effort is to optimize the output machine for speed and size based on an analysis of the event-state
+matrix.  There are command-line switches which force the creation of a compact table, or the use of switch statements instead of a
+table, but these are manual.  One should be able to make those desicions based on the density of the event-state matrix.  It may also
+be possible, using matrix transformations to make some part of the matrix very dense, then use a hybrid table/switch approach in the
+code.
+</p>
+
+<h2 id="Making the fsm Executable">Making the fsm Executable</h2>
+<a href="#TOC">Back to TOC</a>
+
+<p>The source is in a subversion repository at https://ps2.pesticidesoftware.com/svn/FSMLang/trunk.</p>
+
+<p>Four targets are provided to support Linux (RH 6.5 has been tested, but may now need some maintenance),
+Cygwin (on Windows 10), and, Maingw and Mingwsa (also on Windows 10).  <i>Mingw</i> uses the mingw compiler, but expects to
+be built in a Cygwin shell, while Mingwsa works for a stand-alone MinGW installation (but, use the bash shell to do the build).
+To make the executable for any of these, simply type <i>make &lt;target&gt;</i>, spelling the name of the target as given in the
+previous sentence.  Appending ".test" to any target name will execute the full test suite.  Appending ".clean" will do as expected.
+</p>
+
+<p><i>simpleCommunicator.fsm</i> is at the top of the tree; it is as shown in this page.
+</p>
+
+<p>There are irrelevant files at the top of the tree.  Ignore them. (Identifying these is an exercise also left to the reader.)
+</p>
+
+<h2 id="Command Syntax">Command Syntax</h2>
+<a href="#TOC">Back to TOC</a>
+
+<ul class="syntax">
+<li>fsm [-tc|s|h] [-c] [-i0] [-v] [-h] [--generate-weak-functions=false|true] filename, where filename ends with '.fsm'
+</li>
+<li>
+	 <b>-t</b>: 'c' gets you C code output based on an event/state table,
+	 's' gets you C code output with individual state functions using switch constructions,
+	 and 'h' gets you html output
+   <br/><br/>
+   The default is to generate C code using an action table.
+</li>
+<li>
+	-i0 inhibits the creation of a machine instance
+		any other argument to 'i' allows the creation of an instance;
+		this is the default
+</li>
+<li>
+	-c will create a more compact event/state table when -tc is used
+		with machines having actions which return states
+</li>
+<li>
+	-v prints the version and exits
+</li>
+<li>
+	-h prints usage and exits
+</li>
+<li>
+  --generate-weak-fns=false suppresses the generation of weak action and other user functions.  The default,
+true, is to generate such functions.
+</li>
+<li>
+	--include-svg-img=true adds <img/> tag referencing <filename>.svg to include an image at the top of the web page.
+</li>
+<li>
+	--css-content-internal=true puts the CSS directly into the html.
+</li>
+<li>
+	--css-content-filename=<filename> uses the named file for the css citation, or for the content copy.
+</li>
+<li>
+	-v prints the version and exits
+</li>
+</ul>
+
+<p>
+A known limitation is that paths are not handled.  The program must be
+executed from the same directory as the input file is located, and the
+output will be placed in that same directory.
+</p>
+
+<h2 id="Basic Language Syntax">Basic Language Syntax</h2>
+<a href="#TOC">Back to TOC</a>
+
+<p>
+The example machine above illustrates the major language features and 
+syntax.  There are five basic keywords: <span class="keyword">machine</span>, <span class="keyword">state</span>, <span class="keyword">event</span>, <span class="keyword">action</span>, 
+<span class="keyword">transition</span>.  A sixth keyword, <span class="keyword">returns</span>, was shown in the example
+in its use as an informational element for actions, but is not further discussed here.  Identifiers follow the C rules, 
+as do declarations, which may 
+be comma seperated, as in the state and event declarations above, or set 
+seperately delimited by semi-colons as are all of the action declarations.  
+State and event declarations may be interspersed, but all must come before 
+the first action declaration.  Naming scope is within a given machine; that 
+is, on the one hand, all states and events must be declared within a 
+machine in order to be used by the machine, and on the other, different 
+machines may use the same names for states and events because they will 
+apply only within that machine definition.
+</p>
+
+<p>
+The action declaration is :
+</p>
+
+	<p class="inset"><span class="keyword">action</span> action_identifier[event_vector,state_vector];</p>
+
+<p>
+Or,
+</p>
+
+	<p class="inset"><span class="keyword">action</span> action_identifier[event_vector,state_vector] <span class="keyword">transition</span> state_identifier;</p>
+
+<p>
+Where event_vector is 
+</p>
+
+	<p class="inset">event_identifier</p>
+
+<p>
+or,
+</p>
+
+	<p class="inset">(event_identifier_list)</p>
+
+<p>
+with event_identifier_list being
+</p>
+
+	<p class="inset">event_identifier</p>
+
+<p>
+or
+</p>
+
+	<p class="inset">event_identifier, event_identifier_list.</p>
+
+<p>
+The analogous definition holds for state_vectors.
+</p>
+
+<p>It is also possible to declare an actionless transition:
+</p>
+
+	<p class="inset"><span class="keyword">transition</span>[event_vector, state_vector] state_identifier;</p>
+
+<h2>More examples</h2>
+
+<p>
+There are many files with the .fsm extension included in the 
+distribution, most found under the <i>test</i> directory.  All illustrate valid constructions.
+Moreover, the tests starting with <i>full_test</i> create executables with action functions supplied.  The effects of the use of
+other keywords not discussed here can also be seen, such as:
+</p>
+<ul>
+<li>designating a machine to use action functions which return a state instead of an event</li>
+<li>giving a machine some data</li>
+<li>designating header files to be included by the generated header (perhaps needed by the data given to the machine)</li>
+<li>designating a function to call on every machine transition</li>
+<li>transitioning via functions that return states (with machines where actions return events).</li>
+<li>assigning values from external enums to the internal event enumerations (this should be used only when forcing the generation
+of switch statements for state handlers).</li>
+</ul>
+
+<p>Also found in the examples is some new functionality involving complex events.  The html side of this works, but a full test has not
+yet been created.  This may be of interest to <i>ThreadX</i> fans, since the idea of the complex event comes from a working system
+running under <i>ThreadX</i> where some events are messages taken from a queue, and can themselves contain enumerations which further
+refine the event.  For example a message to control a subsystem might contain an enumeration indicating whether to activate
+or deactivate the system.  In this way, the actual real events can be tracked in FSMLang (<i>subsystem.activate</i> being an event distinct
+from <i>subsystem.deactivate</i>).
+</p>
+
+<p>Finally, the test makefiles show how to add
+.fsm targets to a makefile.
+</p>
+
+</div>
+</body>
+</html>

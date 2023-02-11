@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="285px" preserveAspectRatio="none" style="width:380px;height:285px;background:#FFFFFF;" version="1.1" viewBox="0 0 380 285" width="380px" zoomAndPan="magnify"><defs/><g><g id="IDLE"><rect fill="#F1F1F1" height="50" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="50" x="88.28" y="87"/><line style="stroke:#181818;stroke-width:0.5;" x1="88.28" x2="138.28" y1="113.2969" y2="113.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="30" x="98.28" y="104.9951">IDLE</text></g><g id="AWAITING_ACK"><rect fill="#F1F1F1" height="50" rx="12.5" ry="12.5" style="stroke:#181818;stroke-width:0.5;" width="122" x="52.28" y="229"/><line style="stroke:#181818;stroke-width:0.5;" x1="52.28" x2="174.28" y1="255.2969" y2="255.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="102" x="62.28" y="246.9951">AWAITING_ACK</text></g><ellipse cx="113.28" cy="16" fill="#222222" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><!--MD5=[9c5673dd9f569fe24504060ab78be963]
+link *start to IDLE--><g id="link_*start_IDLE"><path d="M113.28,26.01 C113.28,38.7 113.28,62.41 113.28,81.57 " fill="none" id="*start-to-IDLE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="113.28,86.84,117.28,77.84,113.28,81.84,109.28,77.84,113.28,86.84" style="stroke:#181818;stroke-width:1.0;"/></g><!--MD5=[7e84394a6c5681dcde2bc7b901cf3fef]
+link IDLE to AWAITING_ACK--><g id="link_IDLE_AWAITING_ACK"><path d="M88.02,118.78 C64.04,125.75 29.36,140.06 13.28,167 C6,179.21 6,186.79 13.28,199 C21.28,212.4 33.87,222.67 47.46,230.47 " fill="none" id="IDLE-to-AWAITING_ACK" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="52.1,233.02,46.1251,225.1906,47.7138,230.6197,42.2846,232.2085,52.1,233.02" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="152" x="14.28" y="180.0669">Event: SEND_MESSAGE</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="136" x="22.28" y="195.1997">Action: sendMessage</text></g><!--MD5=[41519993d119b59c9f70f9067d27dd43]
+link AWAITING_ACK to IDLE--><g id="link_AWAITING_ACK_IDLE"><path d="M148.28,228.93 C157.51,220.62 166.29,210.48 171.28,199 C176.96,185.96 176.96,180.04 171.28,167 C165.27,153.18 153.78,141.3 142.61,132.23 " fill="none" id="AWAITING_ACK-to-IDLE" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="138.51,129.02,143.117,137.7249,142.4421,132.1085,148.0585,131.4336,138.51,129.02" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="70" x="204.78" y="180.0669">Event: ACK</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127" x="176.28" y="195.1997">Action: checkQueue</text></g><!--MD5=[200bd2250a30e195cf4ce3a5e85d4200]
+link AWAITING_ACK to AWAITING_ACK--><g id="link_AWAITING_ACK_AWAITING_ACK"><path d="M174.68,240.88 C194.03,241.08 209.28,245.46 209.28,254 C209.28,261.74 196.75,266.06 180.01,266.95 " fill="none" id="AWAITING_ACK-to-AWAITING_ACK" style="stroke:#181818;stroke-width:1.0;"/><polygon fill="#181818" points="174.68,267.12,183.8012,270.8353,179.6775,266.9629,183.5499,262.8393,174.68,267.12" style="stroke:#181818;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="152" x="215.28" y="251.0669">Event: SEND_MESSAGE</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="145" x="218.78" y="266.1997">Action: queueMessage</text></g><!--MD5=[ce2b0b80df1a36be26ae78eb8e147767]
+@startuml
+state IDLE
+state AWAITING_ACK
+
+[*] - -> IDLE
+IDLE - -> AWAITING_ACK : Event: SEND_MESSAGE\nAction: sendMessage
+AWAITING_ACK - -> IDLE : Event: ACK\nAction: checkQueue
+AWAITING_ACK - -> AWAITING_ACK : Event: SEND_MESSAGE\nAction: queueMessage
+@enduml
+
+PlantUML version 1.2022.7(Mon Aug 22 13:01:30 EDT 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

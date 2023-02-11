@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>FSMLang Issues</title>
+<link rel="stylesheet" href="fsmlangweb.css"/>
+</head>
+
+<h1>FSMLang Issues</h1>
+
+<body>
+
+<table class="issues">
+
+<tr>
+	<th>1</th>
+	<td>Paths are not handled.  The FSMLang executable must be executed in the directory containing the input file.  The
+output will be placed in that same directory.</td>
+	<td>Open</td>
+</tr>
+
+<tr>
+	<th>2</th>
+	<td>Only one level of sub-machine is supported by the code genertors, while the parser handles
+      many levels.  This means that levels nested more than one level will not be generated, but
+      no parsing error will be given.</td>
+	<td>Open</td>
+</tr>
+
+<tr>
+	<th>3</th>
+	<td>Sub-machines generate warning #188-D enumerated type mixed with another type when compiled with armcc.
+  </td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>4</th>
+	<td>Cannot use both --core-logging-only and --generate-weak-fns.
+  </td>
+	<td>Not reproduced.</td>
+</tr>
+
+<tr>
+	<th>5</th>
+	<td>sub-machines generate unnecessary state transition declarations.</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>6</th>
+	<td>HSM switch machines generate enum mis-match compiler warnings with armcc</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>7</th>
+	<td>sub-machine related declarations must precede fsm data struct declaration.</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>8</th>
+	<td>When the transition keyword immediately follows the event and state lists, the parser thinks a
+      sub-machine exists.
+	</td>
+	<td>Open</td>
+</tr>
+
+<tr>
+	<th>9</th>
+	<td>C++ does not allow forward enum typedefs.
+	</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>10</th>
+	<td>RUN_STATE_MACHINE and DECLARE_xxx_MACHINE violate MISRA C:2012:20.7: <i>Expressions resulting
+      from the expansion of macro parameters shall be enclosed in parentheses</i>. 
+	</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>11</th>
+	<td>
+    Newlines have crept back into the DBG_PRINTFs.
+	</td>
+	<td>Resolved</td>
+</tr>
+
+<tr>
+	<th>11</th>
+	<td>
+    Curly braces cannot appear in the native blocks.
+	</td>
+	<td>Open</td>
+</tr>
+
+<tr>
+	<th>12</th>
+	<td>
+    Macro initializing FSM struct malformed.
+	</td>
+	<td>Resolved</td>
+</tr>
+
+</table>
+
+<p>Please report any issues or concerns to <a href="mailto:fsmlang@pesticidesoftware.com">FSMLang</a>
+</p>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+code {
+	font-family: monospace;
+	white-space: pre;
+}
+
+.keyword {
+	color: blue;
+	font-weight: bold;
+}
+
+.inset {
+	text-indent: .5in;
+}
+
+.syntax {
+	padding: 20px;
+}
+
+.syntax li {
+	margin: 10px;
+}
+
+iframe {
+	display: block;
+	width:  95%;
+	height: 400px;
+	margin: .25in;
+}
+
+table.release_notes, table.issues {
+	border: 1px solid;
+	border-collapse: collapse;
+}
+
+table.release_notes th {
+	min-width: 10%;
+}
+
+table.release_notes th, table.release_notes td, table.issues th, table.issues td {
+	border:         1px solid;
+	vertical-align: top;
+	padding:        10px;
+}
+
+
