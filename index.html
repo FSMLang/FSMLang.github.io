@@ -9,7 +9,7 @@
 
 <h1>FSMLang</h1>
 
-    <p>Current revision is 1.36</p>
+    <p>Current revision is 1.37</p>
 
 <div id="TOC">
 <ul>
@@ -419,6 +419,17 @@ true, is to generate such functions.
 </li>
 <li>
 	-v prints the version and exits
+</li>
+<li>
+    --short-debug-names generates machine debug info without name prefix
+</li>
+<li>
+            --force-generation-of-event-passing-actions forces the generation of
+            such actions even when weak function generation is inhibited.
+            The generated functions are not weak.
+</li>
+<li>
+            --add-machine-name adds the machine name when using the --short-debug-names option
 </li>
 </ul>
 

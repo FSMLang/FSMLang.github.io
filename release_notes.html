@@ -10,6 +10,31 @@
 <table class="release_notes">
 
 <tr>
+	<th>Revision 1.37</th>
+	<td>11 April 2023</td>
+  <td>
+   <p>--add-machine-name can be used to have the machine name included when --short-debug-names is used.  The output is still reduced, since the machine name is included only once per line.
+   </p>
+   
+   <p> Two macros are introduced: ACTION_RETURN_TYPE, which is defined as the return type for action functions; and, FSM_TYPE which is defined as the type of the machine.  These macros can be used to facilitate movement
+     of action functions between sub-machines.
+   </p>
+   
+   <p>Doc comments are now picked up when used with parent::
+   </p>
+ 
+   <p>
+   A new keyword, "all" is added, which must appear in parentheses, to designate a state or event vector
+     subsuming all events or states.
+   </p>
+
+    <p> States may now have entry and exit functions: <i>on (entry|exit) [function_name]</i> where [function_name] is optional.
+    </p>
+
+  </td>
+</tr>
+
+<tr>
 	<th>Revision 1.36</th>
 	<td>8 March 2023</td>
   <td>
