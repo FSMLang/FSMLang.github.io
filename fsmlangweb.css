@@ -1,6 +1,7 @@
 code {
 	font-family: monospace;
 	white-space: pre;
+   margin: 10px;
 }
 
 .keyword {
