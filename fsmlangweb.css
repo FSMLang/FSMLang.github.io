@@ -19,6 +19,7 @@ code {
 
 .syntax li {
 	margin: 10px;
+ list-style: none;
 }
 
 iframe {

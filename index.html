@@ -394,7 +394,7 @@ the creation of sub-machines, or well-thought out action sequences.
 	<p>The source is in a git repository at <a href="https://github.com/FSMLang/FSMLang">https://github.com/FSMLang/FSMLang</a>.</p>
 
 <p>Four targets are provided to support Linux (RH 6.5 has been tested, but may now need some maintenance),
-Cygwin (on Windows 10), and, Maingw and Mingwsa (also on Windows 10).  <i>Mingw</i> uses the mingw compiler, but expects to
+Cygwin (on Windows 10), and, Mingw and Mingwsa (also on Windows 10).  <i>Mingw</i> uses the mingw compiler, but expects to
 be built in a Cygwin shell, while Mingwsa works for a stand-alone MinGW installation (but, use the bash shell to do the build).
 To make the executable for any of these, simply type <i>make &lt;target&gt;</i>, spelling the name of the target as given in the
 previous sentence.  Appending ".test" to any target name will execute the full test suite.  Appending ".clean" will do as expected.
@@ -410,56 +410,58 @@ previous sentence.  Appending ".test" to any target name will execute the full t
 <a href="#TOC">Back to TOC</a>
 
 <ul class="syntax">
-<li>fsm [-tc|s|h] [-c] [-i0] [-v] [-h] [--generate-weak-functions=false|true] filename, where filename ends with '.fsm'
-</li>
 <li>
-	 <b>-t</b>: 'c' gets you C code output based on an event/state table,
-	 's' gets you C code output with individual state functions using switch constructions,
+    Usage : fsm [-tc|s|h|p] [-o outfile] [-s] filename, where filename ends with '.fsm'
+       and where 'c' gets you c code output based on an event/state table,
+       's' gets you c code output with individual state functions using switch constructions,
 	 and 'h' gets you html output
-   <br/><br/>
-   The default is to generate C code using an action table.
+	 and 'p' gets you PlantUML output
 </li>
 <li>
-	-i0 inhibits the creation of a machine instance
-		any other argument to 'i' allows the creation of an instance;
-		this is the default
+      -i0 inhibits the creation of a machine instance
+        any other argument to 'i' allows the creation of an instance;
+        this is the default
 </li>
 <li>
-	-c will create a more compact event/state table when -tc is used
-		with machines having actions which return states
+      -c will create a more compact event/state table when -tc is used
+        with machines having actions which return states
 </li>
 <li>
-	-v prints the version and exits
+      -s prints some useful statistics and exits
 </li>
 <li>
-	-h prints usage and exits
+      -o <outfile> will use <outfile> as the filename for the top-level machine output.
+        Any sub-machines will be put into files based on the sub-machine names.
 </li>
 <li>
-  --generate-weak-fns=false suppresses the generation of weak action and other user functions.  The default,
-true, is to generate such functions.
+      --generate-weak-fns=false suppresses the generation of weak function stubs.
 </li>
 <li>
-	--include-svg-img=true adds <img/> tag referencing <filename>.svg to include an image at the top of the web page.
+      --core-logging-only=true suppresses the generation of debug log messages in all but the core FSM function.
 </li>
 <li>
-	--css-content-internal=true puts the CSS directly into the html.
+      --include-svg-img=true adds <img/> tag referencing <filename>.svg to include an image at the top of the web page.
 </li>
 <li>
-	--css-content-filename=<filename> uses the named file for the css citation, or for the content copy.
+      --css-content-internal=true puts the CSS directly into the html.
 </li>
 <li>
-	-v prints the version and exits
+      --css-content-filename=<filename> uses the named file for the css citation, or
+        for the content copy.
 </li>
 <li>
-    --short-debug-names generates machine debug info without name prefix
+      --short-debug-names generates machine debug info without name prefix
 </li>
 <li>
-            --force-generation-of-event-passing-actions forces the generation of
-            such actions even when weak function generation is inhibited.
-            The generated functions are not weak.
+      --force-generation-of-event-passing-actions forces the generation of
+        such actions even when weak function generation is inhibited.
+        The generated functions are not weak.
 </li>
 <li>
-            --add-machine-name adds the machine name when using the --short-debug-names option
+      --add-machine-name adds the machine name when using the --short-debug-names option
+</li>
+<li>
+      -v prints the version and exits
 </li>
 </ul>
 
