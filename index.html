@@ -52,6 +52,16 @@ FSMLang output in languages other than C is an exercise currently left to
 the reader.)
 </p>
 
+<p>The created state machine contains a single state variable, which should
+not be manipulated by any user-written function.  This variable is maintained on
+the heap, not on the machine's function call stack.  This means that the machine 
+must not be called recursively; neither from within any action function, nor from
+separate threads of execution.  The keyword <span class="keyword">reentrant</span>
+can be used to designate machines which are called from different execution threads.
+Macros will be inserted at the beginning and end of the state machine function which
+must be defined to properly protect the machine from re-entrance.
+</p>
+
 <h3 id="Simple">Example: Simple State Machine</h3>
 <a href="#Philosophy">Back to Philosophy</a>
 
