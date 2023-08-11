@@ -21,6 +21,7 @@
   <li><a href="#EventData">Event Data</a></li>
   </ul>
 </li>
+<li><a href="#Using the State Machine">Using the State Machine</a></li>
 <li><a href="#Making the fsm Executable">Making the fsm Executable</a></li>
 <li><a href="#Command Syntax">Command Syntax</a></li>
 <li><a href="#Basic Language Syntax">Basic Language Syntax</a></li>
@@ -54,8 +55,8 @@ the reader.)
 </p>
 
 <p>The created state machine contains a single state variable, which should
-not be manipulated by any user-written function.  This variable is maintained on
-the heap, not on the machine's function call stack.  This means that the machine 
+not be manipulated by any user-written function.  This variable is maintained in
+the RW data area, not on the machine's function call stack.  This means that the machine 
 must not be called recursively; neither from within any action function, nor from
 separate threads of execution.  The keyword <span class="keyword">reentrant</span>
 can be used to designate machines which are called from different execution threads.
@@ -465,6 +466,34 @@ typedef struct {
 
 <p>In either case, the function arguments are first, a pointer to the machine structure; and second, a pointer to the event data.
 </p>
+
+<h2 id="Using the State Machine">Using the State Machine</h2>
+<a href="#TOC">Back to TOC</a>
+
+<p>To use the state machine in C code, include the generated header file, and 
+use the provided RUN_STATE_MACHINE macro to call the state machine function 
+with the desired event.  Unless prohibited on the FSMLang command line, the 
+generated header file provides a pointer to an instance of the machine, 
+<span class="keyword">p&lt;machineName&gt;</span>.  This is the first 
+argument to the macro.  The second is the event name as found in the 
+machine's event enumeration.
+</p>
+
+<p>Using the Simple Communicator as an example, this line runs the machine 
+with the ACK event:
+</p>
+
+<code>
+    RUN_STATE_MACHINE(psimpleCommunicator,simpleCommunicator_ACK);
+</code>
+
+<p>This would be placed in the function which receives the message.  Since
+such functions are often IRSs, it must be remembered that the machine is not
+reentrant. Invocations of the machine outside of this ISR context must be
+properly protected from this interrupt.  The needed protection can be
+facilitated through the use of the <span class="keyword">reentrant</span>
+keyword to modify the machine declaration.  Or, it may be done by simply wraping the invocation with interrupt protection.
+<p>
 
 <h2 id="Making the fsm Executable">Making the fsm Executable</h2>
 <a href="#TOC">Back to TOC</a>
