@@ -8,6 +8,7 @@
 -->
 <head>
 <title>FSM Lang : simpleCommunicator</title>
+<script>window.name="FSMLang-simpleCommunicator"</script>
 <link REL=stylesheet type="text/css" href="fsmlang.css">
 </head><body>
 <h2>simpleCommunicator</h2>
@@ -32,7 +33,11 @@
 	<ul class="return_decl">
 		<li>noEvent</li>
 	</ul>
-<br/><b>transition</b> : AWAITING_ACK</td>
+<br/><b>transition</b> : AWAITING_ACK<p class="transition_comment">
+    Since we're idle, we can simply send the message.  Transitioning
+    to the AWAITING_ACK state ensures that any other messages
+    we're asked to send will be queued.
+  </p></td>
 		<td class=nullAction>&nbsp;<br/><b>transition</b> : none</td>
 	</tr>
 	<tr>
@@ -41,13 +46,20 @@
 	<ul class="return_decl">
 		<li>noEvent</li>
 	</ul>
-<br/><b>transition</b> : none</td>
+<br/><b>transition</b> : none<p class="transition_comment">
+    Since we're busy, we must queue the message for later
+    sending.  The queue will be checked when the ACK
+    is received.
+  </p></td>
 		<td class=action>checkQueue<br/>returns:
 	<ul class="return_decl">
 		<li>SEND_MESSAGE</li>
 		<li>noEvent</li>
 	</ul>
-<br/><b>transition</b> : IDLE</td>
+<br/><b>transition</b> : IDLE<p class="transition_comment">
+    We've received our ACK for the previous message.  It is 
+    time to check for any others.
+  </p></td>
 	</tr>
 	</tbody>
 </table>
@@ -58,11 +70,13 @@
 </tr>
 <tr>
 <td class="label">SEND_MESSAGE</td>
-<td>&nbsp;</td>
+<td>&nbsp;
+</td>
 </tr>
 <tr>
 <td class="label">ACK</td>
-<td>&nbsp;</td>
+<td>&nbsp;
+</td>
 </tr>
 </table>
 <table class="elements">
@@ -71,12 +85,12 @@
 </tr>
 <tr>
 <td class="label">IDLE</td>
-<td>&nbsp;</td>
-</tr>
+<td>
+&nbsp;</td></tr>
 <tr>
 <td class="label">AWAITING_ACK</td>
-<td>&nbsp;</td>
-</tr>
+<td>
+&nbsp;</td></tr>
 </table>
 <table class="elements">
 <tr>
@@ -85,8 +99,9 @@
 <tr>
 <td class="label">sendMessage</td>
 <td>
-
-   Transmit message to the peer.
+ sendMessage sends a message from the queue.  The
+      message is expected to be there, since
+      checkQueue will have been previously called.
   
 <br/><br/>Returns:<ul class="return_decl">		<li>noEvent</li>
 </ul>
@@ -95,9 +110,7 @@
 <tr>
 <td class="label">queueMessage</td>
 <td>
-
-   Place message into queue.
-  
+ queueMessage adds a message to the queue 
 <br/><br/>Returns:<ul class="return_decl">		<li>noEvent</li>
 </ul>
 </td>
@@ -105,9 +118,10 @@
 <tr>
 <td class="label">checkQueue</td>
 <td>
+ checkQueue only checks; it does not dequeue; that
+      is done by sendMessage.
 
-   Check queue for messages; if found pop from queue and return SEND_MESSAGE.
-   If no message is found in the queue return noEvent.
+      Return SEND_MESSAGE when the queue is not empty.
   
 <br/><br/>Returns:<ul class="return_decl">		<li>SEND_MESSAGE</li>
 		<li>noEvent</li>

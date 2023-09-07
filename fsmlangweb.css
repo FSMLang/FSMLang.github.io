@@ -17,6 +17,11 @@ code {
 	padding: 20px;
 }
 
+.syntax ul {
+	padding: 0;
+	margin-left: 40px;
+}
+
 .syntax li {
 	margin: 10px;
  list-style: none;
