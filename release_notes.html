@@ -10,6 +10,19 @@
 <table class="release_notes">
 
 <tr>
+	<th>Revision 1.41</th>
+	<td>19 November 2023</td>
+	<td>
+		<p>New keywords, <span class="keyword">prologue</span> and <span class="keyword">epilogue</span> are provided.
+		   These keywords modify <span class="keyword">native</span> and <span class="keyword">implementation</span>.
+         <span class="keyword">epilogue</span> causes the block to be placed at the end of its respective file.
+         <span class="keyword">prologue</span> is optional; blocks so modified are still placed at the beginning of 
+         the respective files.
+			</p>
+	</td>
+</tr>
+
+<tr>
    <th>Revision 1.40</th>
    <td>6 September 2023</td>
    <td>
@@ -18,10 +31,11 @@
        </p>
        <p> In switch machines, states which have no transitions will not contain code to invoke any "on transition" functions.
        </p>
-       <p> A "cross-reference" giving the value and names of the event enumeration as a comment before the enumeration declaration may be requested. </td>
+       <p> A "cross-reference" giving the value and names of the event enumeration as a comment before the enumeration declaration may be requested.
        </p>
        <p>State functions now return correct types when events have data.</p>
        <p>Titles and legends may now be requested in plantuml output.</p>
+	   </td>
 </tr>
 
 <tr>
