@@ -22,5 +22,7 @@ s/\b\(entry\)\b/<span class="keyword">\1<\/span>/
 s/\b\(exit\)\b/<span class="keyword">\1<\/span>/
 s/\b\(implementation\)\b/<span class="keyword">\1<\/span>/
 s/\b\(impl\)\b/<span class="keyword">\1<\/span>/
+s/\b\(prologue\)\b/<span class="keyword">\1<\/span>/
+s/\b\(epilogue\)\b/<span class="keyword">\1<\/span>/
 s/\(::\)/<span class="keyword">\1<\/span>/
 
