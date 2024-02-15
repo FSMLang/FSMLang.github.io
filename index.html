@@ -9,7 +9,7 @@
 
     <h1>FSMLang</h1>
 
-    <p>Current revision is 1.40</p>
+    <p>Current revision is 1.42</p>
 
     <div id="TOC">
         <ul>
@@ -20,8 +20,13 @@
                     <li><a href="#StateEntryAndExitFunctions">State Entry and Exit Functions</a></li>
                     <li><a href="#EventData">Event Data</a></li>
                 </ul>
-            </li>
-            <li><a href="#Using the State Machine">Using the State Machine</a></li>
+			</li>
+            <li><a href="#Using the State Machine">Using the State Machine</a>
+				<ul>
+					<li><a href="#C Files Produced">C Files Produced</a></li>
+					<li><a href="#Invoking the State Machine">Invoking the State Machine</a></li>
+				</ul>
+			</li>
             <li><a href="#Commenting">Commenting and Graphical Output</a></li>
             <li><a href="#Making the fsm Executable">Making the fsm Executable</a></li>
             <li><a href="#Command Syntax">Command Syntax</a></li>
@@ -144,8 +149,9 @@
     vectors so described.)
     </p>
 
-    <h4>This is the header file created</h4>
+    <h4>These are the header files created</h4>
     <iframe src="simpleCommunicator.h.html"></iframe>
+    <iframe src="simpleCommunicator_priv.h.html"></iframe>
 
     <h4>This is the source file created</h4>
     <iframe src="simpleCommunicator.c.html"></iframe>
@@ -153,14 +159,26 @@
     <h4>This is the HTML created</h4>
     <iframe src="simpleCommunicator.html"></iframe>
 
-    <p>By default, action functions return events, and the main state macine function loops until an action indicates
-    that there are no further events.
-    </p>
-
     <p>The action functions themselves are not generated; instead, they are written by the machine implementor. This
     allows FSMLang to remain focused on the state machine, rather than the details of the implementation of its purpose
     for existing.
     </p>
+
+	<p>Events are the life-blood of the Finite State Machine.  The machines created by FSMLang depend on mechanisms created
+	by the user to provide these events "from the outside world."  However, by default, the FSMLang core FSM function expects
+	action functions to return an event.  This is a powerful technique for the state machine to immediately feed events to
+	itself, simplifying, for example, the management of internal errors.  Imagine an action function which must allocate some
+	memory to complete its task; should that memory not be available, the function can simply exit, returning a "memory not
+	available" event; the state machine processing for this situation can be placed in another action function, and the machine
+	can be transitioned to an error state, should the situation be unrecoverable.  The core FSM function loops, calling
+	appropriate actions, then making designated transitions, until an action function returns
+	<span class="keyword">noEvent</span>.
+	</p>
+
+	<p>When a reentrant machine is necessary, that is, when a machine must be called both from interrupt and non-interrupt
+	contexts, some care should be taken to ensure that the machine will not loop excessively, since interrupts will be blocked
+	until the core FSM function exits.
+	</p>
 
     <h3 id="Hierarchical">Hierarchical</h3>
     <a href="#Philosophy">Back to Philosophy</a>
@@ -201,19 +219,18 @@
     <span class="keyword">event</span> ESTABLISH_SESSION_REQUEST, STEP0_RESPONSE, STEP1_RESPONSE;
 
     /** Start the session establishment process. */
-    <span class="keyword">action</span> sendStep0Message[ESTABLISH_SESSION_REQUEST, IDLE] <span class="keyword">
-    transition</span> AWAITING_RESPONSE;
+    <span class="keyword">action</span> sendStep0Message[ESTABLISH_SESSION_REQUEST, IDLE] <span class="keyword">transition</span> AWAITING_RESPONSE;
 
     /** Continue session establisment */
     <span class="keyword">action</span> sendStep1Message[STEP0_RESPONSE, AWAITING_RESPONSE];
 
     /** Notify parent that session is established. */
-    <span class="keyword">action</span> notifyParent[STEP1_RESPONSE, AWAITING_RESPONSE] <span class="keyword">transition
-    </span> IDLE;
+    <span class="keyword">action</span> notifyParent[STEP1_RESPONSE, AWAITING_RESPONSE] <span class="keyword">transition</span> IDLE;
 
     /* these lines are informational; they affect the html output, but do not affect any C code generated. */
-    sendStep0Message <span class="keyword">returns</span> noEvent; sendStep1Message <span class="keyword">returns</span>
-    noEvent; notifyParent     <span class="keyword">returns</span> parent::SESSION_ESTABLISHED;
+	sendStep0Message <span class="keyword">returns</span> noEvent;
+	sendStep1Message <span class="keyword">returns</span> noEvent;
+	notifyParent     <span class="keyword">returns</span> parent::SESSION_ESTABLISHED;
 
     }
 
@@ -232,15 +249,16 @@
 
     /** Check queue for messages; if found pop from queue and return SEND_MESSAGE. If no message is found in the queue
     return noEvent. */
-    <span class="keyword">action</span>	checkQueue[ACK,AWAITING_ACK]          <span class="keyword">transition</span>
-    IN_SESSION, checkQueue[SESSION_ESTABLISHED, IDLE] <span class="keyword">transition</span> IN_SESSION;
+    <span class="keyword">action</span>	checkQueue[ACK,AWAITING_ACK]          <span class="keyword">transition</span> IN_SESSION
+	       , checkQueue[SESSION_ESTABLISHED, IDLE] <span class="keyword">transition</span> IN_SESSION;
 
 
     <span class="keyword">transition</span> [SESSION_TIMEOUT, (IN_SESSION, AWAITING_ACK)] IDLE;
 
     /* these lines are informational; they affect the html output, but do not affect any C code generated. */
-    queueMessage <span class="keyword">returns</span> noEvent; sendMessage  <span class="keyword">returns</span>
-    noEvent; checkQueue   <span class="keyword">returns</span> SEND_MESSAGE, noEvent;
+	queueMessage <span class="keyword">returns</span> noEvent;
+	sendMessage  <span class="keyword">returns</span> noEvent;
+	checkQueue   <span class="keyword">returns</span> SEND_MESSAGE, noEvent;
 
     }
 
@@ -251,29 +269,27 @@
     </span> ESTABLISHING_SESSION;
 
     /** Start the session timer and notify the <i>sendMessage</i> machine that the session is established. */
-    <span class="keyword">action</span> completeSessionStart[SESSION_ESTABLISHED, ESTABLISHING_SESSION] <span
-        class="keyword">transition</span> IN_SESSION;
+    <span class="keyword">action</span> completeSessionStart[SESSION_ESTABLISHED, ESTABLISHING_SESSION] <span class="keyword">transition</span> IN_SESSION;
 
     /** Notify the <i>sendMessage</i> machine that the session has timed-out. */
-    <span class="keyword">action</span> notifySessionTimeout[SESSION_TIMEOUT, (ESTABLISHING_SESSION, IN_SESSION)] <span
-        class="keyword">transition</span> IDLE;
+    <span class="keyword">action</span> notifySessionTimeout[SESSION_TIMEOUT, (ESTABLISHING_SESSION, IN_SESSION)] <span class="keyword">transition</span> IDLE;
 
     /** Extend the session timer and pass the message to be sent to the <i>sendMessage</i> machine. */
     <span class="keyword">action</span> requestMessageTransmission[SEND_MESSAGE, (ESTABLISHING_SESSION, IN_SESSION)];
 
 
     /* these lines are informational; they affect the html output, but do not affect any C code generated. */
-    startSessionEstablishment   <span class="keyword">returns</span> SEND_MESSAGE; completeSessionStart        <span
-        class="keyword">returns</span> sendMessage::SESSION_ESTABLISHED; notifySessionTimeout        <span
-        class="keyword">returns</span> sendMessage::SESSION_TIMEOUT; requestMessageTransmission  <span class="keyword">
-    returns</span> sendMessage::SEND_MESSAGE;
+	startSessionEstablishment   <span class="keyword">returns</span> SEND_MESSAGE;
+	completeSessionStart        <span class="keyword">returns</span> sendMessage::SESSION_ESTABLISHED;
+	notifySessionTimeout        <span class="keyword">returns</span> sendMessage::SESSION_TIMEOUT;
+	requestMessageTransmission  <span class="keyword">returns</span> sendMessage::SEND_MESSAGE;
 
     }
 
 
     </code>
 
-    <p>FSMLang produces one header/source file pair, or one html file for each machine it encounters. The top-level
+    <p>The top-level
     machine's event enumeration contains the events of all machines so that any event can be passed to the machine. Each
     sub-machine has its own enumeration, but these enumerations do not start at 0. Rather, they are arranged so that
     each <i>noEvent</i> event has the same numeric value as the corresponding event in the top-level enumeration. In
@@ -286,41 +302,43 @@
     returns the sub-machine's <i>noEvent</i> that event is translated into the top-level machine's <i>noEvent</i>.
     </p>
 
-    <p>FSMLang does not provide for sub-machines to indicate that their action functions return an event from another
-    sub-machine. Rather, sub-machine actions can return events from their own machine, or from their parent. This is by
-    design. The top-level machine should provide actions when necessary to bridge between the activation of different
-    sub-machines.
+    <p> FSMLang does not provide macros for sub-machines to indicate that their action functions return an event from
+	another sub-machine. Rather, sub-machine actions can return events from their own machine, or from their parent.
+	This is by design. The top-level machine should provide actions when necessary to bridge between the activation of
+	different sub-machines.  This, of course, is not a <i>rule</i>, since the event enumeration is available and members
+	can be written out by hand.  But, thus chaining together sub-machines violates the "highly coherent, loosely coupled"
+	principle, which principle has value even within a hierarchical state machine.
     </p>
 
-    <p>However, it is possible for a sub-machine to designate any event as being "from the parent" (<span
+    <p>That being said, it is possible for a sub-machine to designate any event as being "from the parent" (<span
         class="keyword"></span>event parent::</span>e1, for example). The name, of course, must be that of an event
     actually declared in the parent. Moreover, by also giving the name of a data translation function (<i>e.g.</i> <span
-        class="keyword">event parent::</span>e1 <span class="keyword">data translator</span> dt1) When this is done,
-    FSMLang generates code for the parent to call the submachine when that event occurs. If a data translator is given,
-    it will be called before the sub-machine is invoked. More than one sub-machine can share a parent event; the
-    machines will be called in order. The loop will be exited when a machine returns anything other than <span
-        class="keyword">noEvent</span>, so that the parent can then handle that event.
+    class="keyword">event parent::</span>e1 <span class="keyword">data translator</span> dt1), sub-machines can update their
+	local data from the parent. FSMLang generates code for the parent to call the submachine when a shared event occurs.
+	If a data translator is given, it will be called before the sub-machine is invoked. More than one sub-machine can share
+	a parent event; the machines will be called in the order they are defined. The loop will be exited when a machine returns
+	anything other than <span class="keyword">noEvent</span>, so that the parent can then handle that event.  Once one
+	sub-machine does not return <span class="keyword">noEvent</span>, no other sub-machine will have a chance to see the event.
     </p>
 
     <p>It is possible, that the parent would want to inhibit the operation of the sub-machines.  <span class="keyword">
-    state</span> s1
-    <span class="keyword">inhibits submachines</span> will do just that; no submachines will be run, unless shared
-    events exist and the parent handles those events in that state.</p>
+    state</span> s1 <span class="keyword">inhibits submachines</span> will do just that; no submachines will be run
+	by FSMLang in that state.
+	</p>
 
     <p>The html file created for the top-level machine contains a list of sub-machines. The list is hyper-linked to the
     html file for the respective machine.
     </p>
 
-    <p>At the moment, only one level of sub-machine is supported. This limitation may be removed in later releases.
-    </p>
-
-    <p>The -ts flag should always be used to generate code due the way the event enumerations are generated for
-    sub-machines. This limination, too, may be removed in later releases.</p>
+    <p>The -ts flag must always be used to generate code due the way the event enumerations are generated for
+    sub-machines. This limitation may be removed in later releases.</p>
 
     <h4>These are the header files created</h4>
     <iframe src="hsmCommunicator.h.html"></iframe>
-    <iframe src="establishSession.h.html"></iframe>
-    <iframe src="sendMessage.h.html"></iframe>
+    <iframe src="hsmCommunicator_priv.h.html"></iframe>
+    <iframe src="hsmCommunicator_submach.h.html"></iframe>
+    <iframe src="establishSession_priv.h.html"></iframe>
+    <iframe src="sendMessage_priv.h.html"></iframe>
 
     <h4>These are the source files created</h4>
     <iframe src="hsmCommunicator.c.html"></iframe>
@@ -395,16 +413,24 @@
     </p>
 
     <code>
-    typedef struct _&lt;machine_name&gt;_data_packet_arrived_ { unsigned length; uint8t_t *packet; }
-    &lt;MACHINE_NAME&gt;_DATA_PACKET_ARRIVED_DATA, *p&lt;MACHINE_NAME&gt;_DATA_PACKET_ARRIVED_DATA;
+    typedef struct _hsmCommunicator_data_packet_arrived_
+	{
+		unsigned length;
+		uint8t_t *packet;
+	} HSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA, *pHSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA;
     </code>
 
     <p>The event data union is declared:
     </p>
 
     <code>
-    typedef union { &lt;MACHINE_NAME&gt;_DATA_PACKET_ARRIVED_DATA data_packet_arrived_data; . . . }
-    &lt;MACHINE_NAME&gt;_EVENT_DATA, *p&lt;MACHINE_NAME&gt;_EVENT_DATA;
+    typedef union
+	{
+		HSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA data_packet_arrived_data;
+		 .
+		 .
+		 .
+	} HSM_COMMUNICATOR_EVENT_DATA, *pHSM_COMMUNICATOR_EVENT_DATA;
     </code>
 
     <p>Finally, the machine's event enumeration will be named &lt;MACHINE_NAME&gt;_EVENT_ENUM, and a structure,
@@ -412,81 +438,298 @@
     </p>
 
     <code>
-    typedef struct { &lt;MACHINE_NAME&gt;_EVENT_ENUM event; &lt;MACHINE_NAME&gt;_EVENT_DATA event_data; }
-    &lt;MACHINE_NAME&gt;_EVENT, *p&lt;MACHINE_NAME&gt;_EVENT;
+    typedef struct
+	{
+		HSM_COMMUNICATOR_EVENT_ENUM event;
+		HSM_COMMUNICATOR_EVENT_DATA event_data;
+	}
+    HSM_COMMUNICATOR_EVENT, *pHSM_COMMUNICATOR_EVENT;
     </code>
 
     <p>As indicated above, this structure is used to communicate external events to the state machine. It is <i>not</i> used
     to communicate events internally. Internally, events are communicated <i>only</i> through the event enumeration, as is
     done by machines not having events with data. Thus, action functions are declared as returning
-    &lt;MACHINE_NAME&gt;_EVENT_ENUM, rather than &lt;MACHINE_NAME&gt;_EVENT. Because of this, the data communicated by
+    HSM_COMMUNICATOR_EVENT_ENUM, rather than HSM_COMMUNICATOR_EVENT. Because of this, the data communicated by
     the (external) event must be moved into the machine's data structure, in order to be visible to the action
-    functions.
+    functions and to sub-machines' data translators.
     </p>
 
-    <p>The movement of data is done through a invocation of a data translator. The translater can be named in the
-    machine description:
+    <p>The movement of data is done through a invocation of a data translator. The translater is named in the
+    event declaration:
     </p>
 
     <code>
-    <span class="keyword">event</span> data_packet_arrived <span class="keyword">data translator</span> copy_data_packet
-    { unsigned length; uint8t_t *packet; };
+    <span class="keyword">event</span> data_packet_arrived <span class="keyword">data translator</span> copy_data_packet;
     </code>
 
-    <p>Otherwise, a translator function will be declared as &lt;machine_name&gt;_translate_&lt;event_name&gt;_data.
+    <p>When a data translator is indicated but not named, a translator function will be declared as
+	&lt;machine_name&gt;_translate_&lt;event_name&gt;_data.
     </p>
 
-    <p>In either case, the function arguments are first, a pointer to the machine structure; and second, a pointer to
-    the event data.
+    <p>In either case, the function argument is a pointer to the parent's data structure.
     </p>
 
     <h2 id="Using the State Machine">Using the State Machine</h2>
     <a href="#TOC">Back to TOC</a>
 
-    <p>To use the state machine in C code, include the generated header file, and use the provided RUN_STATE_MACHINE
-    macro to call the state machine function with the desired event. Unless prohibited on the FSMLang command line, the
-    generated header file provides a pointer to an instance of the machine, 
-    <span class="keyword">p&lt;machineName&gt;</span>. This is the first argument to the macro. The second is the event
-    name as found in the machine's event enumeration.
+    <h3 id="C Files Produced">C Files Produced</h3>
+    <a href="#Using the State Machine">Back to Using the State Machine</a>
+
+	<p>As has been illustrated, when C language output is requested, a header/source file pair is created for each
+	 machine in the input file.
+	The base header file names end with the string "_priv" to emphasize that they should be included only by the files
+	implementing the various action, transition and other functions required by the machine itself.  For any machine
+	having submachines, a header with a name ending with "_submach" is created to communicate material which must be
+	known by the submachines.  This header is included in the submachine's header, and so can be seen as transparant.
+	Finally, an additional header file for each top-level machine is created for use by other application files so that
+	the machine may be invoked as needed in the application being created.  For the top-level machine, base file names
+	start with the base name of the input file.  For any sub-machines, base file names are formed from the sub-machine
+	names.
+	</p>
+
+	<p>The source files contain all of the functions and structures necessary for the FSM itself,
+	in addition to weak (and mostly empty) implementations of any functions expected to be created by the machine's
+	designers. Structure definitions needed only by the FSM itself are placed in the source file.  The private headers
+	contain only those definitions needed by user functions.
+	</p>
+
+	<p>The header file design is intended to keep the project's global name space free from structure and function
+	declarations needed only by the machine.  Nevertheless, since C does not support name-spaces, the machine ancestry
+	must be prepended to many user-declared function names.  Deeply nested machines can result in very long function
+	names, prompting the creation of the convenience macros discussed later.
+	</p>
+
+	<h3 id="Adding Code">Adding Code to Generated Source and Header Files</h3>
+    <a href="#Using the State Machine">Back to Using the State Machine</a>
+
+	<p>Declaring machine or event data often requires the inclusion of header files which define data types used.  This is
+	done using the <span class="keyword">native</span> keyword:
+	</p>
+
+	<code>
+		<span class="keyword">native</span>
+		{
+			#include &lt;stdio.h&gt;
+			#include "project_header.h"
+
+			#define DBG_PRINTF(...) printf(__VA_ARGS__); printf("\n");
+
+			#include "start_extern_c.h"
+		}
+	</code>
+
+	<p>
+	Text in the native block is parsed by FSMLang in order to find the closing brace.  This means that any braces which
+	appear in the block <i>must</i> be balanced. The alert reader will guess that the file, <i>start_extern_c.h</i> contains
+	</p>
+
+	<code>
+		#ifdef __cplusplus
+		extern "C" {
+		#endif
+	</code>
+
+	<p>This unbalanced brace would cause a parsing error if put directly in the .fsm file.</p>
+
+	<p>
+	When machines have sub-machines, multiple header files are created so the native block is protected from repeated compilation.
+	</p>
+
+	<p>It is also possible to have code included at the end of any generated header:
+	</p>
+
+	<code>
+		<span class="keyword">native epilogue</span>
+		{
+			#include "end_extern_c.h"
+		}
+	</code>
+
+	<p>Even though this block will go at the end of generated headers, it must be placed <i>before</i> the machine is defined.
+	</p>
+
+	<p>For the sake of symmetry, there is a keyword, <span class="keyword">prologue</span>.  But, since its use is optional, it
+	can be said to do nothing other than to make clear which native block will be placed at the beginning of the header files.
+	</p>
+
+	<p>Blocks can also be declared for inclusion at the top or bottom of the generated C source files using the
+	keyword <span class="keyword"> impl(ementation)?</span>.  Such blocks are placed after the machine name, but
+	before the opening curley-brace.
+	</p>
+
+	<code>
+		<span class="keyword">machine</span> some_machine
+		<span class="keyword">native impl</span>
+		{
+			#include "start_extern_c.h"
+		}
+		<span class="keyword">native implementation epilogue</span>
+		{
+			#include "end_extern_c.h"
+		}
+		{
+			/* machine declarations */
+		}
+	</code>
+
+	<p><span class="keyword">implementation</span> can be shortened to <span class="keyword">impl</span>, but no other
+	variants are recognized.  As with the <span class="keyword">native</span> blocks, the optional keyword
+	<span class="keyword">prologue</span> may be used.
+	</p>
+
+    <h3 id="Writing User Functions">Writing User Functions</h3>
+    <a href="#Using the State Machine">Back to Using the State Machine</a>
+
+	<p>Since the most prevelant user functions written are <i>action</i> functions, the files which contian their
+	definitions are often named &lt;machineName&gt;_actions.c.  This file must include &lt;machineName&gt;_priv.h.  Several
+	convenience macros are provided which facilitate the writing of function signatures and return values, as illustrated
+	below using the <i>establishSession</i> machine.
+	</p>
+
+	<table class="no_border">
+		<tr>
+			<th>Macro</th>
+			<th>Definition</th>
+			<th>Example</th>
+		</tr>
+		<tr>
+			<td>ACTION_RETURN_TYPE</td>
+			<td><code>#define ACTION_RETURN_TYPE HSM_COMMUNICATOR_EVENT</code></td>
+			<td><code>ACTION_RETURN_TYPE hsmCommunicator_establishSession_sendStep0Message(pESTABLISH_SESSION);</code>
+				<p>When events do not carry data, they are a simple enumeration; however, when they do carry data, events
+				being handed to the state machine are unions, but the values returned by action functions are the event
+				enumeration.  Using the ACTION_RETURN_TYPE macro facilitates adding data to events without changing action
+				function signatures.
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>FSM_TYPE_PTR</td>
+			<td><code>#define FSM_TYPE_PTR pESTABLISH_SESSION</code></td>
+			<td><code>ACTION_RETURN_TYPE hsmCommunicator_establishSession_sendStep0Message(FSM_TYPE_PTR);</code>
+			<p>Using FSM_TYPE_PTR facilitates shifting user function definitions to new machines, as when
+			tweaking sub-machine design.
+			</p>
+			</td>
+		</tr>
+		<tr>
+			<td>THIS(A)</td>
+			<td><code>#define hsmCommunicator_establishSession_##A</code>
+			</td>
+			<td>Best used to express event return values:
+
+				<code>return THIS(ESTABLISH_SESSION_REQUEST);</code>
+
+				<p>Writing the name prefix can be tedious.  The THIS macro relieves that.  As an added benefit, should
+				the process of designing the FSM be iterative (when is designing code done without at least some iteration?),
+				using THIS for return statements facilitates shifting user function definitions to new machines, as when tweaking
+				sub-machine design.
+				</p>
+
+			</td>
+		</tr>
+		<tr>
+			<td>PARENT(A)</td>
+			<td><code>#define hsmCommunicator_##A</code>
+			</td>
+			<td>Best used to express event return values:
+
+				<code>return PARENT(SESSION_ESTABLISHED);</code>
+
+				<p>Writing the name prefix can be tedious.  The PARENT macro relieves that.  As an added benefit, should the
+				process of designing the FSM be iterative (when is designing code done without at least some iteration?), using
+				PARENT for return statements facilitates shifting user function definitions to new machines, as when tweaking
+				sub-machine design.
+				</p>
+
+			</td>
+		</tr>
+		<tr>
+			<td>UFMN(A)</td>
+			<td>
+				<code>#define UFMN(A) hsmCommunicator_establishSession_##A</code>
+
+				<p>Though apparently the same as <i>THIS</i>, <i>UFMN</i> can morph to:</p>
+				
+				<code>#define UFMN(A) estabishSession_##A</code>
+
+				<p>when --short-user-fn-names=true is used.
+				</p>
+			</td>
+			<td>
+
+				<p>This macro is intended to provide the same benefits as the use of THIS and PARENT to the definition of
+				user functions themselves. Wrapping the function name with UFMN allows movement of user functions between
+				machines without re-typeing their names.  The example below is the most portable way to express the 
+				sendStep0Message action function's signature:
+				</p>
+
+				<code>ACTION_RETURN_TYPE UFMN(sendStep0Message)(FSM_TYPE_PTR);</code>
+
+			</td>
+		</tr>
+	</table>
+
+    <h3 id="Invoking the State Machine">Invoking the State Machine</h3>
+    <a href="#Using the State Machine">Back to Using the State Machine</a>
+
+    <p>To use the state machine in C code, include the generated top-level header file, and use the provided run_&lt;machineName&gt;
     </p>
 
     <p>Using the Simple Communicator as an example, this line runs the machine with the ACK event:
     </p>
 
     <code>
-    RUN_STATE_MACHINE(psimpleCommunicator,simpleCommunicator_ACK);
+    run_simpleCommunicator(simpleCommunicator_ACK);
     </code>
 
     <p>This would be placed in the function which receives the message. Since such functions are often IRSs, it must be
     remembered that the machine is not reentrant. Invocations of the machine outside of this ISR context must be
-    properly protected from this interrupt. The needed protection can be facilitated through the use of the <span
-        class="keyword">reentrant</span>
-    keyword to modify the machine declaration. Or, it may be done by simply wraping the invocation with interrupt
-    protection.
+    properly protected from this interrupt. The needed protection can be facilitated through the use of the
+	<span class="keyword">reentrant</span> keyword to modify the machine declaration. Or, it may be done by simply wraping
+	the invocation with interrupt protection.
     </p>
 
-    <p>
-    With the 1.40 release, a function is provided which can be used to invoke the singleton state machine normally
-    included in the generated code. The function is declared as
-    </p>
+    <h3 id="Exploiting make">Expoiting <i>make</i></h3>
+    <a href="#Using the State Machine">Back to Using the State Machine</a>
 
-    <code>
-    run_&lt;machine_name&gt;(&lt;p&gt;&lt;MACHINE_NAME&gt;_EVENT);
-    </code>
+	<p>Three command line options are provided specifically to exploit the power of make for FSMLang generated code.
+	These options are controlled by the -t selection, which must appear, and must appear afterward.
+	</p>
 
-    <p>For the simpleCommunicator, this would be:
-    </p>
+	<table class="no_border">
+		<tr>
+			<th>-M</th>
+			<td>Produces a list of the source files which would be created.
+			</td>
+		</tr>
+		<tr>
+			<th>-Mh</th>
+			<td>Produces a list of the header files which would be created.
+			</td>
+		</tr>
+		<tr>
+			<th>-Md</th>
+			<td>
+			<p>Produces a recipe which specifies how to create the generated files from the .fsm source:
+			</p>
 
-    <code>
-    run_simpleCommunicator(SIMPLE_COMMUNICATOR_EVENT);
-    </code>
+			<code>
+machine.c submachine1.c submachine2.c subsubmachine1.c: machine.fsm
+	$(FSM) $(FSM_FLAGS) $<
+			</code>
+
+			</td>
+		</tr>
+	</table>
+
 
     <h2 id="Commenting">Commenting and Graphical Output</h2>
     <a href="#TOC">Back to TOC</a>
 
     <p>As shown in the examples above, "document comments" can be added to the FSMLang file. In addition to illuminating
-    the FSMLang file itself, these comments are used in the HTML and PLANTUML output. Release 1.40 brings a slight
-    modification to how document comments are processed.
+    the FSMLang file itself, these comments are used in the HTML and PLANTUML output. Starting with Release 1.40 
+    document comments are processed somewhat differently than in earlier releases.
     </p>
 
     <p>The most visible change is that document comments appearing before action or transition matrices now adhere to
@@ -565,78 +808,81 @@
     <h2 id="Command Syntax">Command Syntax</h2>
     <a href="#TOC">Back to TOC</a>
 
-    <ul class="syntax">
-
-        <li>Usage : /mnt/c/GitHub/FSMLang/linux/fsm [-tc|s|h|p] [-o outfile] [-s] filename, where filename ends with
-            '.fsm'
-            <ul>
-                <li>and where 'c' gets you c code output based on an event/state table,</li>
-                <li>'s' gets you c code output with individual state functions using switch constructions,</li>
-                <li>and 'h' gets you html output</li>
-                <li>and 'p' gets you PlantUML output</li>
-            </ul>
-        </li>
-        <li>-i0 inhibits the creation of a machine instance any other argument to 'i' allows the creation of an
-            instance; this is the default
-        </li>
-        <li>-c will create a more compact event/state table when -tc is used with machines having actions which return
-            states
-        </li>
-        <li>-s prints some useful statistics and exits
-        </li>
-        <li>-o &lt;outfile&gt; will use &lt;outfile&gt; as the filename for the top-level machine output. Any
-            sub-machines will be put into files based on the sub-machine names.
-        </li>
-        <li>--generate-weak-fns=false suppresses the generation of weak function stubs.
-        </li>
-        <li>--force-generation-of-event-passing-actions forces the generation of actions which pass events when weak
-            function generation is disabled.. The generated functions are not weak.
-        </li>
-        <li>--core-logging-only=true suppresses the generation of debug log messages in all but the core FSM function.
-        </li>
-        <li>--generate-run-function
-            <=true|false>enables or supresses the generation of a run function to replace the RUN_STATE_MACHINE machro.
-            The default is to generate the macro; the option argument is optional, if not given, "true" is assumed.
-        </li>
-        <li>--include-svg-img=true adds <img/> tag referencing &lt;filename&gt;.svg to include an image at the top of
-            the web page.
-        </li>
-        <li>--css-content-internal=true puts the CSS directly into the html.
-        </li>
-        <li>--css-content-filename=&lt;filename&gt; uses the named file for the css citation, or for the content copy.
-        </li>
-        <li>--add-plantuml-title=&lt;*true|false&gt; adds the machine name as a title to the plantuml.
-        </li>
-        <li>--add-plantuml-legend=
-            <*center|left|right|top|*bottm>adds a legend to the plantuml. Center, bottom are the defaults. Horizontal
-            and vertial parameters can be added in a quoted string. Center is a horizontal parameter. By default, event,
-            state, and action lists are included in the legend, and event descriptions are removed from the body of the
-            diagram.
-        </li>
-        <li>--exclude-states-from-plantuml-legend=&lt;*true|false&gt; excludes state information from the plantuml
-            legend. When excluded from legend, state comments are included in the diagram body.
-        </li>
-        <li>--exclude-events-from-plantuml-legend=&lt;*true|false&gt; excludes event information from the plantuml
-            legend.
-        </li>
-        <li>--exclude-actions-from-plantuml-legend=&lt;*true|false&gt; excludes action information from the plantuml
-            legend.
-        </li>
-        <li>--add-machine-name adds the machine name when using the --short-debug-names option
-        </li>
-        <li>--add-event-cross-reference&lt;=true|false&gt; adds a cross-reference list as a comment block in front of
-            the machine event enumeration. Omitting the optional argument is equivalent to specifying "true"
-        </li>
-        <li>--add-plantuml-prefix-string=&lt;text&gt; will add the specified text to the plantuml output before any
-            generated output. This option can be specified multiple times; all text will be added in the order given
-         </li>
-         <li>--add-plantuml-prefix-file=&lt;text&gt; will add the text in the specified file to the plantuml output
-            before any generated output. This option can be specified multiple times; all text will be added in the
-            order given for the content copy.
-        </li>
-        <li>-v prints the version and exits
-        </li>
-    </ul>
+	<ul class="syntax">
+	<li>Usage : fsm [-tc|s|h|p] [-o outfile] [-s] filename, where filename ends with '.fsm'</li>
+		<ul>
+			<li>and where 'c' gets you c code output based on an event/state table,</li>
+			<li>'s' gets you c code output with individual state functions using switch constructions,</li>
+			<li>and 'h' gets you html output</li>
+			<li>and 'p' gets you PlantUML output</li>
+		</ul>
+		<li>-i0 inhibits the creation of a machine instance</li>
+			<ul>
+			<li>any other argument to 'i' allows the creation of an instance;</li>
+			<li>this is the default</li>
+			</ul>
+		<li>-c will create a more compact event/state table when -tc is used</li>
+			<ul>
+			<li>with machines having actions which return states</li>
+			</ul>
+		<li>-s prints some useful statistics and exits</li>
+		<li>-o  <outfile> will use <outfile> as the filename for the top-level machine output.</li>
+			<ul>
+			<li>Any sub-machines will be put into files based on the sub-machine names.</li>
+			</ul>
+		<li>--generate-weak-fns=false suppresses the generation of weak function stubs.</li>
+		<li>--force-generation-of-event-passing-actions forces the generation of actions which pass events</li>
+			<ul>
+			<li>when weak function generation is disabled..</li>
+			<li>The generated functions are not weak.</li>
+			</ul>
+		<li>--core-logging-only=true suppresses the generation of debug log messages in all but the core FSM function.</li>
+		<li>--generate-run-function<=true|false> enables or supresses the generation of a run</li>
+			<ul>
+			<li>function to replace the RUN_STATE_MACHINE machro.</li>
+			<li>The default is to generate the macro; the option argument is optional, if not given, "true" is assumed.</li>
+			</ul>
+		<li>--include-svg-img=true adds <img/> tag referencing <filename>.svg to include an image at the top of the web page.</li>
+		<li>--css-content-internal=true puts the CSS directly into the html.</li>
+		<li>--css-content-filename=<filename> uses the named file for the css citation, or</li>
+			<ul>
+			<li>for the content copy.</li>
+			</ul>
+		<li>--add-plantuml-title=<*true|false> adds the machine name as a title to the plantuml.</li>
+		<li>--add-plantuml-legend=<*center|left|right|top|*bottm> adds a legend to the plantuml.</li>
+			<ul>
+			<li>Center, bottom are the defaults.  Horizontal and vertial parameters can be added in a quoted string.</li>
+			<li>Center is a horizontal parameter.</li>
+			<li>By default, event, state, and action lists are included in the legend, and event descriptions are removed</li>
+			<li>from the body of the diagram.</li>
+			</ul>
+		<li>--exclude-states-from-plantuml-legend=<*true|false> excludes state information from the plantuml legend.</li>
+			<ul>
+			<li>When excluded from legend, state comments are included in the diagram body.</li>
+			</ul>
+		<li>--exclude-events-from-plantuml-legend=<*true|false> excludes event information from the plantuml legend.</li>
+		<li>--exclude-actions-from-plantuml-legend=<*true|false> excludes action information from the plantuml legend.</li>
+		<li>--add-machine-name adds the machine name when using the --short-debug-names option</li>
+		<li>--add-event-cross-reference<=true|false> adds a cross-reference list as a comment block</li>
+			<ul>
+			<li>in front of the machine event enumeration. Omitting the optional argument is equivalent</li>
+			<li>to specifying "true"</li>
+			</ul>
+		<li>--add-plantuml-prefix-string=<text> will add the specified text to the plantuml output before</li>
+			<ul>
+			<li>any generated output.  This option can be specified multiple times; all text will be</li>
+			<li>added in the order given</li>
+			<li>for the content copy.</li>
+			</ul>
+		<li>--add-plantuml-prefix-file=<text> will add the text in the specified file</li>
+			<ul>
+			<li>to the plantuml output before any generated output.</li>
+			<li>This option can be specified multiple times; all text will be</li>
+			<li>added in the order given</li>
+			<li>for the content copy.</li>
+			</ul>
+		<li>-v prints the version and exits</li>
+	</ul>
 
     <h2 id="Basic Language Syntax">Basic Language Syntax</h2>
     <a href="#TOC">Back to TOC</a>

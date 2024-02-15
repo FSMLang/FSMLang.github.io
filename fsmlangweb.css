@@ -1,7 +1,8 @@
 code {
 	font-family: monospace;
 	white-space: pre;
-   margin: 10px;
+	margin: 20px;
+	padding: 20px;
 }
 
 .keyword {
@@ -47,6 +48,16 @@ table.release_notes th, table.release_notes td, table.issues th, table.issues td
 	border:         1px solid;
 	vertical-align: top;
 	padding:        10px;
+}
+
+table.no_border th {
+	text-align:     left;
+}
+
+table.no_border th, table.no_border td {
+	vertical-align: top;
+	padding:        10px;
+	margin:         20px;
 }
 
 
