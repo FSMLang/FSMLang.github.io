@@ -13,29 +13,8 @@
 #ifndef _HSMCOMMUNICATOR_H_
 #define _HSMCOMMUNICATOR_H_
 
-#ifdef HSM_COMMUNICATOR_DEBUG
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#endif
+#define FSM_VERSION "1.41"
 
-#define FSM_VERSION "1.26"
-
-#define RUN_STATE_MACHINE(A,B) \
-	((*(A)->fsm)((A),(B)))
-
-#ifndef INIT_FSM_DATA
-#define INIT_FSM_DATA {0}
-#endif
-#define DECLARE_HSM_COMMUNICATOR_MACHINE(A) \
-HSM_COMMUNICATOR (A) =\
-{\
-	hsmCommunicator_IDLE,\
-	&hsmCommunicator_action_array,\
-	hsmCommunicatorFSM\
-};\
-HSM_COMMUNICATOR *p##A = &A;
-
-/* Event naming convenience macros. */
 #undef THIS
 #define THIS(A) hsmCommunicator_##A
 #undef HSM_COMMUNICATOR
@@ -45,7 +24,7 @@ HSM_COMMUNICATOR *p##A = &A;
 #undef SEND_MESSAGE
 #define SEND_MESSAGE(A) hsmCommunicator_sendMessage_##A
 
-typedef enum {
+typedef enum HSM_COMMUNICATOR_EVENT {
 	 hsmCommunicator_SEND_MESSAGE
 	, hsmCommunicator_SESSION_ESTABLISHED
 	, hsmCommunicator_SESSION_TIMEOUT
@@ -60,78 +39,16 @@ typedef enum {
 	, hsmCommunicator_sendMessage_SESSION_ESTABLISHED
 	, hsmCommunicator_sendMessage_SESSION_TIMEOUT
 	, hsmCommunicator_sendMessage_noEvent
-} HSM_COMMUNICATOR_EVENT;
+	, hsmCommunicator_numAllEvents
+}  HSM_COMMUNICATOR_EVENT;
 
-#ifdef HSM_COMMUNICATOR_DEBUG
-extern char *HSM_COMMUNICATOR_EVENT_NAMES[];
-#endif
+#undef ACTION_RETURN_TYPE
+#define ACTION_RETURN_TYPE HSM_COMMUNICATOR_EVENT
 
-typedef enum {
-	 hsmCommunicator_IDLE
-	, hsmCommunicator_ESTABLISHING_SESSION
-	, hsmCommunicator_IN_SESSION
-	, hsmCommunicator_numStates
-} HSM_COMMUNICATOR_STATE;
+void run_hsmCommunicator(HSM_COMMUNICATOR_EVENT);
 
-#ifdef HSM_COMMUNICATOR_DEBUG
-extern char *HSM_COMMUNICATOR_STATE_NAMES[];
-#endif
-
-typedef struct _hsmCommunicator_struct_ HSM_COMMUNICATOR, *pHSM_COMMUNICATOR;
-extern HSM_COMMUNICATOR hsmCommunicator;
-
+typedef struct _hsmCommunicator_struct_ *pHSM_COMMUNICATOR;
 extern pHSM_COMMUNICATOR phsmCommunicator;
-
-typedef HSM_COMMUNICATOR_EVENT (*HSM_COMMUNICATOR_ACTION_FN)(pHSM_COMMUNICATOR);
-
-typedef void (*HSM_COMMUNICATOR_FSM)(pHSM_COMMUNICATOR,HSM_COMMUNICATOR_EVENT);
-
-void hsmCommunicatorFSM(pHSM_COMMUNICATOR,HSM_COMMUNICATOR_EVENT);
-
-/* Sub Machine Declarations */
-
-/* enumerate sub-machines */
-typedef enum {
-	 hsmCommunicator_establishSession
-	, hsmCommunicator_firstSubMachine = hsmCommunicator_establishSession
-	,  hsmCommunicator_sendMessage
-	, hsmCommunicator_numSubMachines
-} HSM_COMMUNICATOR_SUB_MACHINES;
-
-typedef HSM_COMMUNICATOR_EVENT (*HSM_COMMUNICATOR_SUB_MACHINE_FN)(HSM_COMMUNICATOR_EVENT);
-typedef struct _hsmCommunicator_sub_fsm_if_ HSM_COMMUNICATOR_SUB_FSM_IF, *pHSM_COMMUNICATOR_SUB_FSM_IF;
-struct _hsmCommunicator_sub_fsm_if_
-{
-	HSM_COMMUNICATOR_EVENT                first_event;
-	HSM_COMMUNICATOR_EVENT                last_event;
-	HSM_COMMUNICATOR_SUB_MACHINE_FN       subFSM;
-};
-
-extern pHSM_COMMUNICATOR_SUB_FSM_IF hsmCommunicator_sub_fsm_if_array[hsmCommunicator_numSubMachines];
-
-extern HSM_COMMUNICATOR_SUB_FSM_IF establishSession_sub_fsm_if;
-extern HSM_COMMUNICATOR_SUB_FSM_IF sendMessage_sub_fsm_if;
-
-typedef struct _hsmCommunicator_action_trans_struct_ {
-	HSM_COMMUNICATOR_ACTION_FN	action;
-	HSM_COMMUNICATOR_STATE	transition;
-} HSM_COMMUNICATOR_ACTION_TRANS, *pHSM_COMMUNICATOR_ACTION_TRANS;
-
-extern const HSM_COMMUNICATOR_ACTION_TRANS hsmCommunicator_action_array[hsmCommunicator_numEvents][hsmCommunicator_numStates];
-
-struct _hsmCommunicator_struct_ {
-	HSM_COMMUNICATOR_STATE					state;
-	HSM_COMMUNICATOR_ACTION_TRANS const	(*actionArray)[hsmCommunicator_numEvents][hsmCommunicator_numStates];
-	pHSM_COMMUNICATOR_SUB_FSM_IF	(*subMachineArray)[hsmCommunicator_numSubMachines];
-	HSM_COMMUNICATOR_FSM						fsm;
-};
-
-HSM_COMMUNICATOR_EVENT hsmCommunicator_startSessionEstablishment(pHSM_COMMUNICATOR);
-HSM_COMMUNICATOR_EVENT hsmCommunicator_completeSessionStart(pHSM_COMMUNICATOR);
-HSM_COMMUNICATOR_EVENT hsmCommunicator_notifySessionTimeout(pHSM_COMMUNICATOR);
-HSM_COMMUNICATOR_EVENT hsmCommunicator_requestMessageTransmission(pHSM_COMMUNICATOR);
-HSM_COMMUNICATOR_EVENT hsmCommunicator_noAction(pHSM_COMMUNICATOR);
-
 
 
 #endif
