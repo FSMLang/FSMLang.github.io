@@ -10,6 +10,17 @@
 <table class="release_notes">
 
 <tr>
+	<th>Revision 1.43</th>
+	<td>23 May 2024</td>
+	<td>
+        <p>C language event enumeration cross reference is now publishable to an external file, in
+        any of three formats: json, csv, tab-delimited, and, XML. See the new command line options, <i>--event-cross-ref-only</i>
+        and <i>--event-cross-ref-format</i>.
+        </p>
+	</td>
+</tr>
+
+<tr>
 	<th>Revision 1.42</th>
 	<td>15 February 2024</td>
 	<td>
@@ -96,7 +107,7 @@
    <p>braces can now appear inside of native and data blocks
    </p>
    
-   <p>matrix transition state is now legal as a transition only statement.
+   <p>&lt;matrix&gt; <span class="keyword">transition</span> &lt;state&gt; is now legal as a transition only statement.
    </p>
    
    <p>transition statements appearing immediately after a sub-machine no longer cause an error.
@@ -201,7 +212,7 @@
     can designate data translation functions.  Code is generated to call the sub-machine whenever the parent experiences the event.  Any data translation function is called before the sub-machine is called.
     </p> 
     <p>
-   A <i>native impl(ementation)?</i> block can be defined in the machine qualifier section, analogous to the native block preceding the machine, the <i>native
+   A <span class="keyword">native impl(ementation)?</span> block can be defined in the machine qualifier section, analogous to the native block preceding the machine, the <i>native
      implementation</i> block is copied into the source file, rather than the header.
     </p>
 	</td>

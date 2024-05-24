@@ -60,4 +60,21 @@ table.no_border th, table.no_border td {
 	margin:         20px;
 }
 
+.sidebar {
+	float:     inline-end;
+	margin:    20px;
+	padding:   20px;
+	max-width: 25%;
+	border:    1px solid black;
+	background: lightgrey;
+}
 
+.after-sidebar {
+	clear: both;
+}
+
+.overview {
+	margin: 0 auto;
+	box-sizing: boarder-box;
+	display: flow;
+}
