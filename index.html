@@ -324,7 +324,7 @@
     </code>
 
     <p>
-    The top-level machine&amp;s event enumeration contains the events of all machines so that any event can be passed to
+    The top-level machine&apos;s event enumeration contains the events of all machines so that any event can be passed to
     the machine. Each sub-machine has its own enumeration, but these enumerations do not start at 0. Rather, they are
     arranged so that each <i>noEvent</i> event has the same numeric value as the corresponding event in the top-level
     enumeration. In this way, sub-machines are easily selected based on their numeric event range.
@@ -396,11 +396,6 @@
     <p>
     The html file created for the top-level machine contains a list of sub-machines. The list is hyper-linked to the
     html file for the respective machine.
-    </p>
-
-    <p>
-    The -ts flag must always be used to generate code due the way the event enumerations are generated for sub-machines.
-    This limitation may be removed in later releases.
     </p>
 
     <h4 class="after-sidebar">These are the header files created</h4>
@@ -488,8 +483,12 @@
     </p>
 
     <code>
-    <span class="keyword">event</span> data_packet_arrived <span class="keyword">data</span> { unsigned length; uint8_t
-    *packet; };
+    <span class="keyword">event</span> data_packet_arrived
+    <span class="keyword">data</span>
+    {
+        unsigned length;
+        uint8_t *packet;
+    };
 
     </code>
 
@@ -504,7 +503,11 @@
     </p>
 
     <code>
-    typedef struct _hsmCommunicator_data_packet_arrived_ { unsigned length; uint8t_t *packet; }
+    typedef struct _hsmCommunicator_data_packet_arrived_
+    {
+        unsigned length;
+        uint8t_t *packet;
+    }
     HSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA, *pHSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA;
     </code>
 
@@ -513,8 +516,13 @@
     </p>
 
     <code>
-    typedef union { HSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA data_packet_arrived_data; . . . }
-    HSM_COMMUNICATOR_EVENT_DATA, *pHSM_COMMUNICATOR_EVENT_DATA;
+    typedef union
+    {
+        HSM_COMMUNICATOR_DATA_PACKET_ARRIVED_DATA data_packet_arrived_data;
+        .
+        .
+        .
+    } HSM_COMMUNICATOR_EVENT_DATA, *pHSM_COMMUNICATOR_EVENT_DATA;
     </code>
 
     <p>
@@ -523,8 +531,11 @@
     </p>
 
     <code>
-    typedef struct { HSM_COMMUNICATOR_EVENT_ENUM event; HSM_COMMUNICATOR_EVENT_DATA event_data; }
-    HSM_COMMUNICATOR_EVENT, *pHSM_COMMUNICATOR_EVENT;
+    typedef struct
+    {
+        HSM_COMMUNICATOR_EVENT_ENUM event;
+        HSM_COMMUNICATOR_EVENT_DATA event_data;
+    } HSM_COMMUNICATOR_EVENT, *pHSM_COMMUNICATOR_EVENT;
     </code>
 
     <p>
@@ -542,8 +553,13 @@
     </p>
 
     <code>
-    <span class="keyword">event</span> data_packet_arrived <span class="keyword">data translator</span>
-    copy_data_packet;
+    <span class="keyword">event</span> data_packet_arrived
+    <span class="keyword">data</span>
+    {
+        unsigned length;
+        uint8t_t *packet;
+    }
+    <span class="keyword">translator</span> copy_data_packet;
     </code>
 
     <p>
@@ -597,11 +613,13 @@
 
     <code>
     <span class="keyword">native</span>
-    { #include &lt;stdio.h&gt; #include "project_header.h"
+    {
+    #include &lt;stdio.h&gt; #include "project_header.h"
 
     #define DBG_PRINTF(...) printf(__VA_ARGS__); printf("\n");
 
-    #include "start_extern_c.h" }
+    #include "start_extern_c.h"
+    }
     </code>
 
     <p>
@@ -611,7 +629,9 @@
     </p>
 
     <code>
-    #ifdef __cplusplus extern "C" { #endif
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
     </code>
 
     <p>
@@ -629,7 +649,9 @@
 
     <code>
     <span class="keyword">native epilogue</span>
-    { #include "end_extern_c.h" }
+    {
+    #include "end_extern_c.h"
+    }
     </code>
 
     <p>
@@ -816,7 +838,8 @@
         </p>
 
         <code>
-        machine.c submachine1.c submachine2.c subsubmachine1.c: machine.fsm $(FSM) $(FSM_FLAGS) $&lt;
+        machine.c submachine1.c submachine2.c subsubmachine1.c: machine.fsm
+            $(FSM) $(FSM_FLAGS) $&lt;
         </code>
 
         </td>
@@ -843,7 +866,8 @@
 
     <p>
     With this change, the comments are now used differently in the HTML output, and used for the first time in the
-    plantuml output.
+    plantuml
+        output.
     </p>
 
     <p>
