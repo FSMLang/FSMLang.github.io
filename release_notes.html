@@ -10,6 +10,50 @@
 <table class="release_notes">
 
 <tr>
+    <th>Revision 1.44</th>
+    <td>29 September 2024</td>
+    <td>
+        <p>New C language output variant creating an event-oriented array is provided.
+        </p>
+
+        <p>Most full tests now create each variant (event-state table, state array, and, event array).  In order to
+        create identical output with each, "noAction" debug print statements have been added to the state and event array variants
+        to match the those which were already present in the event-state table variant.
+        </p>
+
+        <p>The full tests which test all variants also have a <i>size</i> target producing a file of that name, containing the
+        size of the image created by each variant.  New make include files, <i>variants.mk</i> and <i>create_target.mk</i>
+        support the variant related targets.
+        </p>
+
+        <p>The FSM function may now be profiled.  See --add-profiling-macros and --profile-sub-fsms.
+        </p>
+
+        <p>PlantUML generation for the case that there is a single loopback for a state
+        is correctly formatted.
+        </p>
+
+        <p>The HTML class for the first state no longer indicates that the state has no
+        entry point.
+        </p>
+
+        <p>A new language output, reStructuredText, is now provided via the -tr option.
+        </p>
+
+        <p>It is now possible to indicate that a transition function will return "noTransition".
+        </p>
+
+        <p>Data blocks now support more than one level of indirection.
+        </p>
+
+        <p>The native impl block is now included in the source <i>before</i> the generated
+        macros, thus preceding <i>any</i> generated code.
+        </p>
+
+    </td>
+</tr>
+
+<tr>
 	<th>Revision 1.43.1</th>
 	<td>17 July 2024</td>
 	<td>
