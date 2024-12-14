@@ -10,7 +10,7 @@
     <h1>FSMLang</h1>
 
     <p>
-    Current revision is 1.43.1
+    Current revision is 1.44
     </p>
 
     <div id="TOC">
@@ -162,15 +162,15 @@
         <h3>Actions Return Events</h3>
 
         <p>
-        Allowing actions to return events opens up two powerful design paradigms. In addition to enabling the 
-        handling of errors in a manner similar to raising an exception, the technique allows an action function to
-        further refine an input event. Expanding our communications example, the "other side" will almost certainly be
-        sending responses other than simple ACKs. To handle the complete range of responses, the <i>external</i> event
-        would be, perhaps,
+        Allowing actions to return events opens up two powerful design paradigms. In addition to enabling the handling
+        of errors in a manner similar to raising an exception, the technique allows an action function to further refine
+        an input event. Expanding our communications example, the "other side" will almost certainly be sending
+        responses other than simple ACKs. To handle the complete range of responses, the <i>external</i> event would be,
+        perhaps,
         <b>MESSAGE_RECEIVED</b>. The action function for <b>MESSAGE_RECEIVED</b> would examine the message and return
-        the <b>ACK</b> event, should the message be an acknowledgement, or other events, based on what the 
-        message contained. The handler for <b>MESSAGE_RECEIVED</b> becomes a sub-routine returning the message 
-        type as an event. </p> 
+        the <b>ACK</b> event, should the message be an acknowledgement, or other events, based on what the message
+        contained. The handler for <b>MESSAGE_RECEIVED</b> becomes a sub-routine returning the message type as an event.
+        </p>
 
     </div>
 
@@ -376,8 +376,8 @@
 
     <p>
     That being said, it is possible for a sub-machine to designate any event as being "from the parent" (<span
-        class="keyword">event parent::</span>e1, for example). The name, of course, must be that of an event
-    actually declared in the parent. Moreover, by also giving the name of a data translation function (<i>e.g.</i> <span
+        class="keyword">event parent::</span>e1, for example). The name, of course, must be that of an event actually
+    declared in the parent. Moreover, by also giving the name of a data translation function (<i>e.g.</i> <span
         class="keyword">event parent::</span>e1 <span class="keyword">data translator</span> dt1), sub-machines can
     update their local data from the parent. FSMLang generates code for the parent to call the submachine when a shared
     event occurs. If a data translator is given, it will be called before the sub-machine is invoked. More than one
@@ -426,6 +426,20 @@
     --include-svg-img=true option to include the image in the output.
     </p>
 
+    <div class="sidebar">
+        <h3>C Code Variants</h3>
+        <p>
+        The code generated for each of the three C code options differs mainly in the construction of the mechanism for
+        accessing actions and transitions. The basic 'c' option creates a two-dimensional array indexed on event and
+        state. The cells of the array are composed of structs containing the action and transition information for that
+        event-state pair. The 's' option creates an array of state functions, with each function containing a switch (if
+        needed) for the events that state handles. Finally, the 'e' option creates an array indexed by the events
+        enumeration. In the simple (but rare) case that the event is handled identically in all states and there is no
+        transition, the event's single action function populates the spot in the array. Otherwise, event handling
+        functions are created, switched on state as necessary, providing action and transition support.
+        </p>
+    </div>
+
     <p>
     An unrealized goal of the FSMLang effort is to optimize the output machine for speed and size based on an analysis
     of the event-state matrix. There are command-line switches which force the creation of a compact table, or the use
@@ -461,8 +475,8 @@
     </p>
 
     <p>
-    Because they are powerful, entry and exit functions can be mis-used. As the names chosen here suggest, they should
-    be used only to prepare a state or to leave it in a tidy condition. They should not be used as a substitue for the
+    Because they are powerful, entry and exit functions can be misused. As the names chosen here suggest, they should be
+    used only to prepare a state or to leave it in a tidy condition. They should not be used as a substitue for the
     creation of sub-machines, or well-thought out action sequences.
     </p>
 
@@ -563,7 +577,7 @@
     The source files contain all of the functions and structures necessary for the FSM itself, in addition to weak (and
     mostly empty) implementations of any functions expected to be created by the machine's designers. Structure
     definitions needed only by the FSM itself are placed in the source file. The private headers contain only those
-    definitions needed by user functions.
+    definitions needed by user functions or sub-machines.
     </p>
 
     <p>
@@ -802,9 +816,7 @@
         </p>
 
         <code>
-        machine.c submachine1.c submachine2.c subsubmachine1.c: machine.fsm $(FSM) $(FSM_FLAGS) $
-        <
->
+        machine.c submachine1.c submachine2.c subsubmachine1.c: machine.fsm $(FSM) $(FSM_FLAGS) $&lt;
         </code>
 
         </td>
@@ -868,8 +880,7 @@
     <h2 id="Other Output">Other Output</h2>
     <a href="#TOC">Back to TOC</a>
 
-    <h3 id="Statistics"></h3>
-    <a href="#Other Output">Back to Other Output</a>
+    <h3 id="Statistics"></h3><a href="#Other Output">Back to Other Output</a>
 
     <h2 id="Making the fsm Executable">Making the fsm Executable</h2>
     <a href="#TOC">Back to TOC</a>
@@ -922,106 +933,150 @@
     <a href="#TOC">Back to TOC</a>
 
     <ul class="syntax">
-        <li>Usage : fsm [-tc|s|h|p] [-o outfile] [-s] filename, where filename ends with '.fsm'
-            <ul>
+        <li>Usage : ../NewFSMLang/linux/fsm [-tc|s|e|h|p|r] [-o outfile] [-s] filename, where filename ends with '.fsm'
+            <ul class="syntax">
                 <li>and where 'c' gets you c code output based on an event/state table,</li>
                 <li>'s' gets you c code output with individual state functions using switch constructions,</li>
-                <li>and 'h' gets you html output</li>
-                <li>and 'p' gets you PlantUML output</li>
+                <li>'e' gets you c code output with a table of functions for each event using switch constructions,</li>
+                <li>'h' gets you html output</li>
+                <li>'p' gets you PlantUML output</li>
+                <li>'r' gets you reStructuredText output</li>
             </ul>
         </li>
         <li>-i0 inhibits the creation of a machine instance
-            <ul>
+            <ul class="syntax">
                 <li>any other argument to 'i' allows the creation of an instance;</li>
                 <li>this is the default</li>
             </ul>
         </li>
         <li>-c will create a more compact event/state table when -tc is used
-            <ul>
+            <ul class="syntax">
                 <li>with machines having actions which return states</li>
             </ul>
         </li>
         <li>-s prints some useful statistics and exits</li>
-        <li>-o
-            &lt;outfile&gt; will use &lt;outfile&gt; as the filename for the top-level machine output.
-            <ul>
+        <li>-o &lt;outfile&gt; will use &lt;outfile&gt; as the filename for the top-level machine output.
+            <ul class="syntax">
                 <li>Any sub-machines will be put into files based on the sub-machine names.</li>
             </ul>
         </li>
         <li>--generate-weak-fns=false suppresses the generation of weak function stubs.</li>
+        <li>--short-user-fn-names=true causes user functions (such as action functions to use only the machine name when
+            the sub-machine depth is 1).</li>
         <li>--force-generation-of-event-passing-actions forces the generation of actions which pass events
-            <ul>
-                <li>when weak function generation is disabled..</li>
+            <ul class="syntax">
+                <li>when weak function generation is disabled.</li>
                 <li>The generated functions are not weak.</li>
             </ul>
         </li>
         <li>--core-logging-only=true suppresses the generation of debug log messages in all but the core FSM function.</li>
-        <li>--generate-run-function
-            <=true|false>enables or supresses the generation of a run
-            <ul>
-                <li>function to replace the RUN_STATE_MACHINE machro.</li>
-                <li>The default is to generate the macro; the option argument is optional, if not given, "true" is
-                    assumed.</li>
+        <li>--generate-run-function&lt;=true|false&gt; this option is deprecated. The run function is always generated;
+            <ul class="syntax">
+                <li>no RUN_STATE_MACHINE macro is provided.</li>
             </ul>
         </li>
-        <li>--include-svg-img=true adds <img/> tag referencing
-            &lt;filename&gt;.svg to include an image at the top of the web page.</li>
+        <li>--include-svg-img&lt;=*true|false&gt; adds &lt;img/&gt; tag referencing &lt;filename&gt;.svg to include an
+            image at
+            <ul class="syntax">
+                <li>the top of the web page.</li>
+            </ul>
+        </li>
         <li>--css-content-internal=true puts the CSS directly into the html.</li>
-        <li>--css-content-filename=
-            &lt;filename&gt; uses the named file for the css citation, or
-            <ul>
+        <li>--css-content-filename=&lt;filename&gt; uses the named file for the css citation, or
+            <ul class="syntax">
                 <li>for the content copy.</li>
             </ul>
         </li>
-        <li>--add-plantuml-title=
-            &lt;*true|false&gt; adds the machine name as a title to the plantuml.</li>
-        <li>--add-plantuml-legend=
-            &lt;*center|left|right|top|*bottom&gt; adds a legend to the plantuml. <ul>
+        <li>--add-plantuml-title=&lt;*true|false&gt; adds the machine name as a title to the plantuml.</li>
+        <li>--add-plantuml-legend=&lt;*center|left|right|top|*bottm&gt; adds a legend to the plantuml.
+            <ul class="syntax">
                 <li>Center, bottom are the defaults. Horizontal and vertial parameters can be added in a quoted string.</li>
                 <li>Center is a horizontal parameter.</li>
-                <li>By default, event, state, and action lists are included in the legend, and event descriptions are
-                    removed</li>
+                <li>By default, event, state, and action lists are</li>
+                <li>included in the legend, and event descriptions are removed</li>
                 <li>from the body of the diagram.</li>
             </ul>
         </li>
-        <li>--exclude-states-from-plantuml-legend=
-            <*true|false>excludes state information from the plantuml legend.
-            <ul>
+        <li>--exclude-states-from-plantuml-legend=&lt;*true|false&gt; excludes state information from the plantuml
+            legend.
+            <ul class="syntax">
                 <li>When excluded from legend, state comments are included in the diagram body.</li>
             </ul>
         </li>
-        <li>--exclude-events-from-plantuml-legend=
-            <*true|false>excludes event information from the plantuml legend.</li>
-        <li>--exclude-actions-from-plantuml-legend=
-            &lt;*true|false&gt; excludes action information from the plantuml legend.</li>
+        <li>--exclude-events-from-plantuml-legend=&lt;*true|false&gt; excludes event information from the plantuml
+            legend.</li>
+        <li>--exclude-actions-from-plantuml-legend=&lt;*true|false&gt; excludes action information from the plantuml
+            legend.</li>
+        <li>--convenience-macros-in-public-header[=&lt;*true|false&gt;] includes convenience macros
+            <ul class="syntax">
+                <li>(THIS, UFMN, e.g.) in the public header of the top-level machine;</li>
+                <li>otherwise, they are placed in the private header.</li>
+            </ul>
+        </li>
         <li>--add-machine-name adds the machine name when using the --short-debug-names option</li>
-        <li>--add-event-cross-reference
-            &lt;=true|false&gt; adds a cross-reference list as a comment block
-            <ul>
+        <li>--add-event-cross-reference&lt;=true|*false&gt; adds a cross-reference list as a comment block
+            <ul class="syntax">
                 <li>in front of the machine event enumeration. Omitting the optional argument is equivalent</li>
                 <li>to specifying "true"</li>
             </ul>
         </li>
-        <li>--event-cross-ref-only=&lt;*true|false&gt; creates a cross-reference list as a separate file.  When the
-            format is not specified by --event-cross-ref-format, json is provided.  The file created is
-            &lt;filename&gt;.[json|csv|tab|xml].
+        <li>--event-cross-ref-only&lt;=*true|false&gt; creates a cross-reference list as a separate file.
+            <ul class="syntax">
+                <li>When the format is not specified by --event-cross-ref-format, json is provided.</li>
+                <li>The file created is &lt;filename&gt;.[json|csv|tab|xml]</li>
+            </ul>
         </li>
         <li>--event-cross-ref-format=[json|csv|tab|xml] specifies the output format for --event-cross-ref-only.
-            Specifying this option obviates --event-cross-ref-only.
+            <ul class="syntax">
+                <li>Specifying this option obviates --event-cross-ref-only.</li>
+            </ul>
         </li>
-        <li>--add-plantuml-prefix-string=
-            &lt;text&gt; will add the specified text to the plantuml output before <ul>
+        <li>--add-plantuml-prefix-string=&lt;text&gt; will add the specified text to the plantuml output before
+            <ul class="syntax">
                 <li>any generated output. This option can be specified multiple times; all text will be</li>
                 <li>added in the order given</li>
                 <li>for the content copy.</li>
             </ul>
         </li>
-        <li>--add-plantuml-prefix-file=
-            &lt;text&gt; will add the text in the specified file <ul>
+        <li>--add-plantuml-prefix-file=&lt;text&gt; will add the text in the specified file
+            <ul class="syntax">
                 <li>to the plantuml output before any generated output.</li>
                 <li>This option can be specified multiple times; all text will be</li>
                 <li>added in the order given</li>
                 <li>for the content copy.</li>
+            </ul>
+        </li>
+        <li>-M prints the file name(s) of the source files that would have been created to stdout.
+            <ul class="syntax">
+                <li>This is useful in Makefiles for getting the list of files</li>
+                <li>that will be generated </li>
+                <li>(e.g. GENERATED_SRC=$(shell $(FSM) -M -tc $(FSM_SRC))).</li>
+                <li>This option must preceed the -t option.</li>
+            </ul>
+        </li>
+        <li>-Mh prints the file name(s) of the headers that would have been created to stdout.
+            <ul class="syntax">
+                <li>This is useful in Makefiles for getting the list of files</li>
+                <li>that will be generated </li>
+                <li>(e.g. GENERATED_HDRS=$(shell $(FSM) -M -tc $(FSM_SRC))).</li>
+                <li>This option must preceed the -t option. And, only tc or ts are applicable.</li>
+            </ul>
+        </li>
+        <li>-Md print a lines suitable for inclusion in a Makefile giving the recipe for
+            <ul class="syntax">
+                <li>creating dependent files.</li>
+                <li>This option must preceed the -t option.</li>
+            </ul>
+        </li>
+        <li>--add-profiling-macros&lt;=true|*false&gt; adds profiling macros at the beginning
+            <ul class="syntax">
+                <li>and end of the FSM function, and before and after invocation of action functions.</li>
+            </ul>
+        </li>
+        <li>--profile-sub-fsms&lt;=true|*false&gt; adds profiling macros at the beginning
+            <ul class="syntax">
+                <li>and end of the FSM function in sub-machines. Profiling macros</li>
+                <li>must also be enabled.</li>
             </ul>
         </li>
         <li>-v prints the version and exits</li>
@@ -1136,7 +1191,8 @@
     -->
 
     <p>
-    Finally, the test makefiles show how to add .fsm targets to a makefile.
+    Finally, the test makefiles show how to add .fsm targets to a makefile, and to have make targets which create each
+    variant and even compare the sizes of the different images produced.
     </p>
 
 </div>
