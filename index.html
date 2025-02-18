@@ -10,7 +10,7 @@
     <h1>FSMLang</h1>
 
     <p>
-    Current revision is 1.44.1
+    Current revision is 1.45.0
     </p>
 
     <div id="TOC">
@@ -1086,7 +1086,7 @@
                 <li>This option must preceed the -t option. And, only tc or ts are applicable.</li>
             </ul>
         </li>
-        <li>-Md print a lines suitable for inclusion in a Makefile giving the recipe for
+        <li>-Md print a line suitable for inclusion in a Makefile giving the recipe for
             <ul class="syntax">
                 <li>creating dependent files.</li>
                 <li>This option must preceed the -t option.</li>
@@ -1101,6 +1101,11 @@
             <ul class="syntax">
                 <li>and end of the FSM function in sub-machines. Profiling macros</li>
                 <li>must also be enabled.</li>
+            </ul>
+        </li>
+        <li>--empty-cell-fn=&lt;name&gt; designates a function to be called when
+            <ul class="syntax">
+                <li>an event/state cell is empty.</li>
             </ul>
         </li>
         <li>-v prints the version and exits</li>
