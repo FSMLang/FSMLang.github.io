@@ -1,8 +1,8 @@
 
-name: SphinxBuildDeploy
+name: SphinxBuild
 
 on:
-  push:
+  pull_request:
     branches: [ "master" ]
 
   workflow_dispatch:
@@ -30,23 +30,4 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: _build/html
-
-  deploy:
-    needs: build
-
-    permissions:
-        pages: write
-        id-token: write
-
-    environment:
-        name: github-pages
-        url: ${{ steps.deployment.output.page_url }}
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
 
