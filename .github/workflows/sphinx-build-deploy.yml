@@ -17,8 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-		- name: Get PlantUML
-		  run: pip install plantuml
+      - name: Get PlantUML
+        run: pip install plantuml
 
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
