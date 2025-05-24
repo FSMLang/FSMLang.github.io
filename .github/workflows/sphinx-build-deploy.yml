@@ -26,6 +26,9 @@ jobs:
       - name: Get PlantUML
         run: pip install plantuml
 
+      - name: Where is plantuml?
+        run: which plantuml
+
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
 
