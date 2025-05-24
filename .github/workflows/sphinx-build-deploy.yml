@@ -27,7 +27,7 @@ jobs:
         run: pip install plantuml
 
       - name: Where is plantuml?
-        run: find / -name "*plantuml*" -print
+        run: find / -name "*plantuml*" -print 2> /dev/null
 
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
