@@ -1,0 +1,27 @@
+# This is a basic workflow to help you get started with Actions
+
+name: SphinxBuildDeploy
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Runs a single command using the runners shell
+      - name: Get Sphinx Stuff
+        run: pip install -r requirements.txt
+
+      # Runs a set of commands using the runners shell
+      - name: Do build
+        run:  make html
+

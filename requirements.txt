@@ -1,0 +1,8 @@
+Sphinx==7.3.7
+sphinxcontrib-plantuml==0.30
+sphinx-rtd-theme==3.0.2
+sphinxcontrib.svgbob==0.3.0
+rst2pdf==0.103.1
+svglib==1.5.1
+breathe==4.36.0
+
