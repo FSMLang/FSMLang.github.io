@@ -24,10 +24,7 @@ jobs:
         run: pip install graphviz
 
       - name: Get PlantUML
-        run: pip install plantuml
-
-      - name: Where is plantuml?
-        run: find / -name "*plantuml*" -print 2> /dev/null
+        run: sudo apt-get install plantuml
 
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
