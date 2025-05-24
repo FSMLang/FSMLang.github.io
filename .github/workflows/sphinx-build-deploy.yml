@@ -1,5 +1,8 @@
 # This is a basic workflow to help you get started with Actions
 
+#      - name: Get graphviz
+#        run: pip install graphviz
+
 name: SphinxBuildDeploy
 
 on:
@@ -19,9 +22,6 @@ jobs:
 
       - name: Get java
         run: sudo apt-get install default-jre
-
-      - name: Get graphviz
-        run: pip install graphviz
 
       - name: Get PlantUML
         run: sudo apt-get install plantuml
