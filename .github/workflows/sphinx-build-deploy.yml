@@ -1,4 +1,3 @@
-# This is a basic workflow to help you get started with Actions
 
 name: SphinxBuildDeploy
 
@@ -28,4 +27,28 @@ jobs:
 
       - name: Do build
         run:  make html
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/html
+
+  deploy:
+    needs: build
+
+    permissions:
+        pages: write
+        id-token: write
+
+    environment:
+        name: github-pages
+        url: ${{ steps.deployment.output.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
 
