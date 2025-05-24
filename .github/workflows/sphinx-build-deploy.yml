@@ -20,6 +20,9 @@ jobs:
       - name: Get java
         run: sudo apt-get install default-jre
 
+      - name: Get graphviz
+        run: pip install graphviz
+
       - name: Get PlantUML
         run: pip install plantuml
 
