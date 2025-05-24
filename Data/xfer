@@ -1,0 +1,4 @@
+	native impl
+	{
+	   #define INIT_FSM_DATA {msg_none, { 0 }}
+	}

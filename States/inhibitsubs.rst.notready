@@ -1,0 +1,116 @@
+.. role:: fsmlang(code)
+	:language: fsmlang
+
+=======================
+Inhibiting Sub-machines
+=======================
+
+We're going to re-arrange our HSM Communicator for this example.
+
+First, we'll change the shared event landscape a bit.  The sub-machines will share only the MESSAGE_RECEIVED and INIT events
+with the top-level.  The SEND_MESSAGE event will no longer be shared, though an event by that name will be used by the
+*sendMessage* machine.
+
+.. code-block:: fsmlang
+	:caption: establishSession
+
+	/* from top-level */
+	event MESSAGE_RECEIVED;
+
+	event parent::MESSAGE_RECEIVED data translator copy_current_message;
+
+.. code-block:: fsmlang
+	:caption: sendMessage
+
+	/* from top-level */
+	event INIT, MESSAGE_RECEIVED;
+	
+	event parent::INIT data translator init_data;
+	
+	event parent::MESSAGE_RECEIVED data translator copy_current_message
+	      , SEND_MESSAGE
+	      , ACK;
+
+With these changes, the top-level machine no longer needs to handle either message. So, we'll look at a time-saving command line
+option.
+
+Recall from :doc:`../HSM/hsmexplained2`, that we are building with ``--generate-weak-fns=false``, and were doing so to show how a
+parent machine had two different ways to communicate with its children.  One way is to share events; the other is to return one of the
+sub-machine's events from an action function.  The example showed the top-level machine explicitly choosing when events are sent.
+There is another option.
+
+When ``--force-generation-of-event-passing-actions`` is added to the command line, then the action functions needed to pass events
+are generated, and they are not weak.  Thus, we need only to declare where in the event/state matrix the top-level machine wants
+to handle any shared event; the function will be generated.  Of course, when the top-level machine needs to also handle the event
+itself, this option cannot be used.
+
+All of this is to move the machine to a point where :fsmlang:`inhibits submachines` can be illustrated. In the top-level machine,
+we set the INIT state and the IDLE state to inhibit sub-machines.
+
+.. code-block:: fsmlang
+	:emphasize-lines: 2, 7
+
+	/** The wakeup state. */
+	state UNINITIALIZED inhibits submachines;
+	
+	/** The first initialized state.  Also, this is the state to which the machine
+	    returns when a session times out.
+	*/
+	state IDLE inhibits submachines;
+	
+This adds a new function to the main FSM loop:
+
+.. code-block:: c
+	:emphasize-lines: 1, 29
+
+	static bool doNotInhibitSubMachines(HSM_COMMUNICATOR_STATE);
+	void hsmCommunicatorFSM(pHSM_COMMUNICATOR pfsm, pHSM_COMMUNICATOR_EVENT event)
+	{
+	    HSM_COMMUNICATOR_EVENT_ENUM e = event->event;
+	
+	    translateEventData(&pfsm->data, event);
+	
+	    while (e != hsmCommunicator_noEvent) {
+	
+	#ifdef HSM_COMMUNICATOR_DEBUG
+	        if (EVENT_IS_NOT_EXCLUDED_FROM_LOG(e))
+	        {
+	            DBG_PRINTF("event: %s; state: %s"
+	                       ,HSM_COMMUNICATOR_EVENT_NAMES[e]
+	                       ,HSM_COMMUNICATOR_STATE_NAMES[pfsm->state]
+	                      );
+	        }
+	#endif
+	
+	        /* This is read-only data to facilitate error reporting in action functions */
+	        pfsm->event = e;
+	
+	        if (e < hsmCommunicator_noEvent)
+	        {
+	            e = ((* (*pfsm->statesArray)[pfsm->state])(pfsm,e));
+	        }
+	        else
+	        {
+	            e = doNotInhibitSubMachines(pfsm->state) ? findAndRunSubMachine(pfsm, e) : THIS(noEvent);
+	        }
+	
+	    }
+	}
+
+Where *doNotInihibitSubMachines* is defined thusly:
+
+.. code-block:: c
+
+	static bool doNotInhibitSubMachines(HSM_COMMUNICATOR_STATE s)
+	{
+	    switch (s)
+	    {
+	    case hsmCommunicator_UNINITIALIZED:
+	    case hsmCommunicator_IDLE:
+	        return false;
+	
+	    default:
+	        return true;
+	    }
+	}
+
