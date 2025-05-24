@@ -17,11 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
+		- name: Get PlantUML
+		  run: pip install plantuml
+
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
 
-      # Runs a set of commands using the runners shell
       - name: Do build
         run:  make html
 
