@@ -1,0 +1,52 @@
+
+name: SphinxBuildDeploy
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get java
+        run: sudo apt-get install default-jre
+
+      - name: Get PlantUML
+        run: sudo apt-get install plantuml
+
+      - name: Get Sphinx Stuff
+        run: pip install -r requirements.txt
+
+      - name: Do build
+        run:  make html
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build/html
+
+  deploy:
+    needs: build
+
+    permissions:
+        pages: write
+        id-token: write
+
+    environment:
+        name: github-pages
+        url: ${{ steps.deployment.output.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+
