@@ -9,6 +9,7 @@ import sys
 import os
 
 project = 'FSMLang'
+version = '1.45.1'
 copyright = '2025, me'
 author = 'me'
 
