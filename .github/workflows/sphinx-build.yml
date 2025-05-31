@@ -24,7 +24,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Do build
-        run:  make html
+        run:  make build html
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
