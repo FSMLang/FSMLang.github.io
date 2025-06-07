@@ -10,6 +10,19 @@
 <table class="release_notes">
 
 <tr>
+    <th>Revision 1.46</th>
+    <td>7 June 2025</td>
+    <td>
+		<p>Include <i>stdbool.h</i> when functions returning bool are generated.</p>
+		<p>Add an option to include state enumerations in the cross reference only output.</p>
+		<p>Create a full example of a hierarchical state machine.</p>
+		<p>Do not share events in states which inhibit sub-machines. A new CL option,</p>
+		<code>--inhibiting-states-share-events=&lt;*true|false&gt;</code>
+		<p>has been added to preserve the previous behavior, which was to share events.</p>
+    </td>
+</tr>
+
+<tr>
     <th>Revision 1.45.1</th>
     <td>15 March 2025</td>
     <td>
