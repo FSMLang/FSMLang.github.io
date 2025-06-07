@@ -68,7 +68,9 @@ This documentation presents language concepts primarily through two examples, :d
 and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data for both machines and events, and
 :doc:`States/stateindex` rounds out the discussion of states.
 
-:download:`Download </_build/pdf/FSMLang.pdf>` this document as a pdf.
+.. only:: html
+
+	:download:`Download </_build/pdf/FSMLang.pdf>` this document as a pdf.
 
 .. toctree::
 	:hidden:
