@@ -83,3 +83,10 @@ and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data f
 	States/stateindex
 	Misc/cloptions
 
+.. only:: pdf
+
+	.. footer::
+
+		###Page### of ###Total###
+
+
