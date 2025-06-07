@@ -156,6 +156,12 @@ Usage and Command Line Options
 
 
 
+.. option:: --include-state-cross-refs=<*true|false>
+
+	Includes cross reference for states.	Top-level states are placed in the same file as the events; sub-machines each get their own files.
+
+
+
 .. option:: --add-plantuml-prefix-string=<text>
 
 	will add the specified text to the plantuml output before	any generated output.  This option can be specified multiple times; all text will be	added in the order given	for the content copy.
@@ -201,6 +207,12 @@ Usage and Command Line Options
 .. option:: --empty-cell-fn=<name>
 
 	designates a function to be called when	an event/state cell is empty.
+
+
+
+.. option:: --inhibiting-states-share-events<=*true|false>
+
+	When true, events are shared to	sub-machines even in states which inhibit them.  The default is to not share.	This option allows sharing behavior of version 1.45.1 and before to be preserved.
 
 
 
