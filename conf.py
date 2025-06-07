@@ -9,9 +9,9 @@ import sys
 import os
 
 project = 'FSMLang'
-version = '1.45.1'
-copyright = '2025, me'
-author = 'me'
+version = '1.46'
+copyright = '2025, The Maintainers'
+author = 'The Maintainers'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
