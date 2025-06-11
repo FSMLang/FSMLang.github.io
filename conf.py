@@ -69,7 +69,7 @@ html_css_files = [
 #]
 
 # A comma-separated list of custom stylesheets. Example:
-pdf_stylesheets = ['sphinx', 'a4']
+pdf_stylesheets = ['sphinx', 'a4', 'fsmlang']
 
 # A list of folders to search for stylesheets. Example:
 pdf_style_path = ['.', '_styles']
@@ -92,7 +92,7 @@ pdf_fit_mode = "shrink"
 # Section level that forces a break page.
 # For example: 1 means top-level sections start in a new page
 # 0 means disabled
-pdf_break_level = 1
+pdf_break_level = 0
 
 # When a section starts in a new page, force it to be 'even', 'odd',
 # or just use 'any'
@@ -112,10 +112,10 @@ pdf_use_index = True
 # pdf_use_modindex = True
 
 # If false, no coverpage is generated.
-# pdf_use_coverpage = True
+pdf_use_coverpage = True
 
 # Name of the cover page template to use
-# pdf_cover_template = 'sphinxcover.tmpl'
+pdf_cover_template = 'sphinxcover.tmpl'
 
 # Label to use as a prefix for the subtitle on the cover page
 # subtitle_prefix = 'version'
