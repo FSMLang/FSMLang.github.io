@@ -87,6 +87,6 @@ and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data f
 
 	.. footer::
 
-		###Page### of ###Total###
+		###Page### 
 
 
