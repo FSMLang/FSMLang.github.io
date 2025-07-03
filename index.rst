@@ -13,7 +13,8 @@ FSMLang: Better State Machine Design
 FSMLang is was created to allow design work in the problem space of finite state machines without the encumbrances of
 any particular implementation language. Thus, FSMLang is implemented as a "pre-processor," generating code in any
 desired general programming language to implement the described finite state machine. FSMLang allows effort to be
-focused on the definition of events, states, and transitions.  Indeed, though the action to be taken in any
+focused on the definition of events (including the sequences in which the events are expected), states, and transitions.
+Indeed, though the action to be taken in any
 particular event/state intersection is declarable, the actual definition of that action is treated as a
 detail which falls outside the scope of FSMLang. Moreover, the mechanisms for collecting or determining events are
 also outside the language scope. FSMLang creates an object or objects in a target programming language which, when
@@ -66,7 +67,8 @@ and `Documents <https://github.com/FSMLang/FSMLang.github.io>`_.
 
 This documentation presents language concepts primarily through two examples, :doc:`Simple/simpleindex`,
 and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data for both machines and events, and
-:doc:`States/stateindex` rounds out the discussion of states.
+:doc:`States/stateindex` rounds out the discussion of states.  The important topic of event sequences is taken up
+in :doc:`Sequences/index`.
 
 .. only:: html
 
@@ -81,6 +83,7 @@ and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data f
 	HSM/hsmindex
 	Data/dataindex
 	States/stateindex
+	Sequences/index
 	Misc/cloptions
 
 .. only:: pdf
