@@ -66,6 +66,56 @@ to the basic machine diagram:
 	
 	@enduml
 
+
+-----------
+Transitions
+-----------
+
+When transitions are given by a function rather than a state, the sequence should indicate which option to choose.
+
+.. code-block:: fsmlang
+
+	sequence seq1 e1 transition s1, e2, e5;
+
+Should the possible return values for the transition function be given in the machine specification, the transition
+indicated in the sequence will be checked against that list.  A note will be placed in the PlantUML output with the
+audit results.
+
+When the sequence does not choose a transition, a note to that effect is also placed in the PlantUML output; the first
+listed transition function return value will be chosen.  If no return values are listed, no transition will be made.
+
+In the case that a sequence specifies a transition when no transition function is involved, the choice given in the
+sequence is audited against the machine specification.  Again, the results of that audit are displayed as notes in
+the PlantUML output.
+
+--------------------
+Start and End States
+--------------------
+
+Transition functions are a _choice_; the event sequence will behave differently depending on which choice is taken.  To
+fully document this in an event sequence, it is possible to declare a sequence as starting from any state.  Thus,
+_sequence1_ can progress through a transition choice taking the first path; then _sequence2_ can be written to take up from that same choice, but starting with a different option.  In this way, it is not necessary to repeat the initial part
+of the sequence.
+
+A start state is declared before the events themselves:
+
+.. code-block:: fsmlang
+
+	sequence seq1 start s1 e1, e2 transition s3, e4, e5;
+	sequence seq2 start s2 e4, e5;
+
+Here, the other possible transition after e2 is s2; the second sequence picks up there with the same events as the
+first sequence thereafter.
+
+End states are different; they exist only to provide an audit point.  If the sequence does not finish in the designated
+end state, something is wrong.  A note to that effect is added to the PlantUML output.
+
+End states are given after the event list:
+
+.. code-block:: fsmlang
+
+	sequence seq3 start s1 e1, e2, e3, e4 end s3;
+
 .. toctree::
 	:maxdepth: 2
 
