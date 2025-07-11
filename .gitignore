@@ -1,0 +1,12 @@
+# vi
+*.swp
+
+# sphinx build
+_build/
+
+# SlickEdit
+*.vpj
+*.vpw
+*.vpwhist
+*.vtg
+
