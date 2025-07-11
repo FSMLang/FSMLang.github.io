@@ -4,7 +4,7 @@ simpleCommunicator.fsm
 
 :download:`Download <../Source/simpleCommunicator.fsm>`
 
-The sequences are highlighted
+The sequences are highlighted.
 
 .. code-block:: fsmlang
 	:emphasize-lines: 62, 63
