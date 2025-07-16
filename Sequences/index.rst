@@ -92,9 +92,10 @@ the PlantUML output.
 Start and End States
 --------------------
 
-Transition functions are a _choice_; the event sequence will behave differently depending on which choice is taken.  To
+Transition functions are a *choice* ; the event sequence will behave differently depending on which choice is taken.  To
 fully document this in an event sequence, it is possible to declare a sequence as starting from any state.  Thus,
-_sequence1_ can progress through a transition choice taking the first path; then _sequence2_ can be written to take up from that same choice, but starting with a different option.  In this way, it is not necessary to repeat the initial part
+*sequence1* can progress through a transition choice taking the first path; then *sequence2* can be written to take up
+from that same choice, but starting with a different option.  In this way, it is not necessary to repeat the initial part
 of the sequence.
 
 A start state is declared before the events themselves:
@@ -115,6 +116,58 @@ End states are given after the event list:
 .. code-block:: fsmlang
 
 	sequence seq3 start s1 e1, e2, e3, e4 end s3;
+
+-----------
+HTML Output
+-----------
+
+The HTML output adds a table of all of the sequences in text (below), or as a list of the UML diagrams when `--include-svg-img`
+is used and the images were previously produced.  The table is placed just before the table of sub-machines.
+
+.. raw:: html
+
+	<table class="elements">
+	<thead><tr>
+	<th colspan=5 align=left>Event Sequences</th>
+	</tr>
+	<tr><th>Name</th><th>Comment</th><th>Initial State</th><th>Sequence</th><th>Final State</th></tr>
+	</thead>
+	<tbody>
+	<tr>
+	<td class="label">seq1</td>
+	<td>
+	</td>
+	<td>
+	IDLE</td>
+	<td>
+	<ul class="event_sequence">
+	<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+	<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+	</ul>
+	</td>
+	<td>
+	<p>Traced: IDLE.</p></td>
+	</tr>
+	<tr>
+	<td class="label">seq2</td>
+	<td>
+	</td>
+	<td>
+	IDLE</td>
+	<td>
+	<ul class="event_sequence">
+	<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+	<li>SEND_MESSAGE: AWAITING_ACK &rarr; AWAITING_ACK (queueMessage)</li>
+	<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+	<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+	<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+	</ul>
+	</td>
+	<td>
+	<p>Traced: IDLE.</p></td>
+	</tr>
+	</tbody>
+	</table>
 
 .. toctree::
 	:maxdepth: 2

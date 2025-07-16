@@ -21,34 +21,34 @@ The sequences are highlighted.
 	*/
 	machine simpleCommunicator {
 	
-		state	IDLE,
-					AWAITING_ACK;
+	   state IDLE,
+	         AWAITING_ACK;
 	
-		event	SEND_MESSAGE,
-	NEVER_SEEN,
-					ACK;
+	   event SEND_MESSAGE,
+	         NEVER_SEEN,
+	         ACK;
 	
-		action neverExecuted[NEVER_SEEN, (IDLE, AWAITING_ACK)];
+	   action neverExecuted[NEVER_SEEN, (IDLE, AWAITING_ACK)];
 	
 	  /**
 	    Since we're idle, we can simply send the message.  Transitioning
 	    to the AWAITING_ACK state ensures that any other messages
 	    we're asked to send will be queued.
 	  */
-		action	sendMessage[SEND_MESSAGE,IDLE] transition AWAITING_ACK;
+	   action   sendMessage[SEND_MESSAGE,IDLE] transition AWAITING_ACK;
 	
 	  /**
 	    Since we're busy, we must queue the message for later
 	    sending.  The queue will be checked when the ACK
 	    is received.
 	  */
-		action	queueMessage[SEND_MESSAGE,AWAITING_ACK];
+	   action   queueMessage[SEND_MESSAGE,AWAITING_ACK];
 	
 	  /**
 	    We've received our ACK for the previous message.  It is 
 	    time to check for any others.
 	  */
-		action	checkQueue[ACK,AWAITING_ACK] transition IDLE;
+	   action   checkQueue[ACK,AWAITING_ACK] transition IDLE;
 	
 	  /* these lines are informational; they affect the html output,
 	      but do not affect any code generated.

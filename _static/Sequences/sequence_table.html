@@ -1,0 +1,47 @@
+<html>
+<head>
+<link REL=stylesheet type="text/css" href="fsmlang.css">
+</head>
+<table class="elements">
+<thead><tr>
+<th colspan=5 align=left>Event Sequences</th>
+</tr>
+<tr><th>Name</th><th>Comment</th><th>Initial State</th><th>Sequence</th><th>Final State</th></tr>
+</thead>
+<tbody>
+<tr>
+<td class="label">seq1</td>
+<td>
+</td>
+<td>
+IDLE</td>
+<td>
+<ul class="event_sequence">
+<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+</ul>
+</td>
+<td>
+<p>Traced: IDLE.</p></td>
+</tr>
+<tr>
+<td class="label">seq2</td>
+<td>
+</td>
+<td>
+IDLE</td>
+<td>
+<ul class="event_sequence">
+<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+<li>SEND_MESSAGE: AWAITING_ACK &rarr; AWAITING_ACK (queueMessage)</li>
+<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+<li>SEND_MESSAGE: IDLE &rarr; AWAITING_ACK (sendMessage)</li>
+<li>ACK: AWAITING_ACK &rarr; IDLE (checkQueue)</li>
+</ul>
+</td>
+<td>
+<p>Traced: IDLE.</p></td>
+</tr>
+</tbody>
+</table>
+</html>
