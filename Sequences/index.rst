@@ -169,7 +169,20 @@ is used and the images were previously produced.  The table is placed just befor
 	</tbody>
 	</table>
 
+------------------------
+ReSTructured Text Output
+------------------------
+
+The RST output adds a table of all of the sequences in text, or as a list of the UML diagrams when `--include-svg-img`
+is used and the images were previously produced.  The table is placed just before the table of sub-machines.
+
+See the Event Sequence section of :doc:`RST/simpleCommunicator`
+
+
 .. toctree::
 	:maxdepth: 2
+	:caption: More Files
 
 	Source/index
+	RST/simpleCommunicator
+
