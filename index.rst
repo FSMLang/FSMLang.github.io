@@ -1,7 +1,5 @@
 .. FSMLang documentation master file, created by
    sphinx-quickstart on Tue Apr 29 20:06:52 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 .. role:: fsmlang(code)
 	:language: fsmlang
@@ -9,6 +7,11 @@
 ====================================
 FSMLang: Better State Machine Design
 ====================================
+
+.. admonition:: Compatibility Warning
+
+	Version 2.0 was released in November of 2025.  The bump in the major version reflects an incompatibility in the generated
+	API for data translation functions.  See :doc:`Misc/instances` for a complete description of the change and its motivation.
 
 FSMLang is was created to allow design work in the problem space of finite state machines without the encumbrances of
 any particular implementation language. Thus, FSMLang is implemented as a "pre-processor," generating code in any
@@ -84,6 +87,7 @@ in :doc:`Sequences/index`.
 	Data/dataindex
 	States/stateindex
 	Sequences/index
+	Misc/instances
 	Misc/cloptions
 
 .. only:: pdf

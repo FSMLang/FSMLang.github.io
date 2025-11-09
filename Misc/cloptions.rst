@@ -3,8 +3,7 @@ Usage and Command Line Options
 ==============================
 
 
-
-.. option:: Usage : /mnt/c/GitHub/FSMLang2/linux/fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
+.. option:: Usage : fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
 
 .. option:: 'c'
 
@@ -44,7 +43,7 @@ Usage and Command Line Options
 
 .. option:: -i0
 
-	inhibits the creation of a machine instance	any other argument to 'i' allows the creation of an instance;	this is the default
+	inhibits the creation of a machine instance;	any other unsigned argument to 'i' allows the creation	of that many instances;	creating one instance is the default
 
 
 
@@ -84,7 +83,7 @@ Usage and Command Line Options
 
 .. option:: --generate-run-function<=true|false>
 
-	this option is deprecated.  The run function is always generated;	no RUN_STATE_MACHINE macro is provided.
+	this option is deprecated.  The run function is always generated when instances are created;	no RUN_STATE_MACHINE macro is provided.	When multiple instances are requested, a run function is created for each.
 
 
 
@@ -94,7 +93,7 @@ Usage and Command Line Options
 
 
 
-.. option:: --css-content-internal=true
+.. option:: --css-content-internal=<*true|false>
 
 	puts the CSS directly into the html.
 

@@ -97,7 +97,7 @@ class FSMLangLexer(RegexLexer):
 		'actions', 'return', 'returns', 'states', 'events', 'void', 'transition', 'data', 'native',
 		'implementation', 'impl', 'on', 'entry', 'exit', 'prologue', 'epilogue', 'translator', 'all',
 		'struct', 'union', 'inhibits', 'submachines', 'parent', 'void', 'external', 'reentrant',
-		'noEvent', 'noTransition', 'sequence', 'start'
+		'noEvent', 'noTransition', 'sequence', 'start', 'guard'
 		)
 
 	operators = ( '::' )
@@ -266,7 +266,7 @@ class FSMLangLexer(RegexLexer):
 		#   do not need to be unique.
 		'a_name': [
          include('commentsandwhitespace'),
-			(r'(transition)\b', Keyword.Reserved, 'get_transition_name'),
+			(r'(transition|guard)\b', Keyword.Reserved, 'get_transition_name'),
 			(r'([$a-zA-Z_][\w\\]*)', add_action, 'matrix'),
 			(r';', Punctuation, '#pop'),
          default('#pop')
@@ -313,7 +313,7 @@ class FSMLangLexer(RegexLexer):
 			(r'(event)\b', Keyword.Declaration, 'e_name'),
 			(r'(state)\b', Keyword.Declaration, 's_name'),
 			(r'(action)\b', Keyword.Declaration, 'a_name'),
-			(r'(transition)\b', Keyword.Declaration, 'transition'),
+			(r'(transition|guard)\b', Keyword.Declaration, 'transition'),
 			(r'(returns)\b', Keyword.Reserved, 'returns'),
 			(r'(sequence)\b', Keyword.Declaration, 'read_sequence'),
 			(r'(native)([{])'
