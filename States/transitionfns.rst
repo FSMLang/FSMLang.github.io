@@ -1,9 +1,9 @@
 .. role:: fsmlang(code)
 	:language: fsmlang
 
-====================
-Transition Functions
-====================
+==============================
+Transition Functions or Guards
+==============================
 
 All examples shown thus far have declared transitions in terms of the state to which the machine will move.  It is possible,
 however to specify a function to be called, which will return the appropriate transition state.  This is dangerous,
@@ -36,6 +36,14 @@ The same effect can be accomplished, perhaps with better clarity, with this cons
 	where_to_go  returns s2, noTransition
 	
 In this case, the criteria for the state change are coded in *where_to_go*.
+
+.. admonition:: Terminology
+	:class: sidebar
+
+	In UML parlance, *where_to_go* is a *guard*.
+
+	FSMLang offers :fsmlang:`guard` as an optional keyword usable when the transition is via a function.
+
 
 In both constructions, when e1 occurs in s1, nothing is done and the machine ends up in either s1 or s2.
 
@@ -117,7 +125,7 @@ Or, using a transition function, we could write:
     state IDLE, AWAITING_RESPONSE;
 
     /** Parse the incoming message */
-    action parseMessage[MESSAGE_RECEIVED, AWAITING_RESPONSE] transition handle_rejection;
+    action parseMessage[MESSAGE_RECEIVED, AWAITING_RESPONSE] guard handle_rejection;
 
     parseMessage returns STEP0_RESPONSE, STEP1_RESPONSE, parent::SESSION_REJECTED, noEvent;
 
@@ -125,11 +133,11 @@ Or, using a transition function, we could write:
 
 In this solution, parseMessage returns the parent SESSION_REJECTED event itself, and handle_rejection decides whether the machine
 will remain in the AWAITING_RESPONSE state or transition to the IDLE state.  In this, we save an action function, but gain a
-transition function.
+transition, or, *guard*, function.
 
-But, now that we have the transition function, one further refinment can be made.  The action, *notifyParent* is no longer needed;
+But, now that we have the guard function, one further refinment can be made.  The action, *notifyParent* is no longer needed;
 *parseMessage* can return parent::SESSION_ESTABLISHED just as well as it can return parent::SESSION_REJECTED. And, if we're going
-to do that, then *handle_rejection* is no longer a good name for the transition function, so we'll go with the blander
+to do that, then *handle_rejection* is no longer a good name for the guard function, so we'll go with the blander
 *decide_parse_transition*.
 
 So, we have this:
@@ -163,7 +171,7 @@ So, we have this:
     action sendStep1Message[STEP0_RESPONSE, AWAITING_RESPONSE];
 
     /** Parse the incoming message */
-    action parseMessage[MESSAGE_RECEIVED, AWAITING_RESPONSE] transition decide_parse_transition;
+    action parseMessage[MESSAGE_RECEIVED, AWAITING_RESPONSE] guard decide_parse_transition;
 
     /* these lines are informational; they affect the html output, but do not affect any C code generated. */
     sendStep0Message returns noEvent;
@@ -230,7 +238,7 @@ The new *decide_parse_transition* looks like this:
 
 This causes the machine to move to the IDLE state when the session is either established or rejected, but remain in the
 AWAITING_RESPONSE state when the step0 response is received.  The key thing to notice here is that this function takes no
-actions; it merely chooses a path.  This is a key to good state machine design using transition functions.
+actions; it merely chooses a path.  This is a key to good state machine design using guard functions.
 
 At the top-level, we have merely to add the *clearQueue* action:
 
