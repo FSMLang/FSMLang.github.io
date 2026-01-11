@@ -13,16 +13,19 @@
 </head><body>
 <h2>hsmCommunicator::establishSession</h2>
 <p>
-    <p>Establish a connection with the peer.
-    </p>
-    <p>Two messages must be exchanged with the peer to successfully establish the session.  The machine needs
+
+    Establish a connection with the peer.
+    
+
+    Two messages must be exchanged with the peer to successfully establish the session.  The machine needs
     only two states, IDLE and AWAITING_RESPONSE since the top level machine tracks whether or not it is in a
     session.  The AWAITING_RESPONSE state serves for both required messages, since the receipt of each message produces
     a unique event.
-    </p>
-    <p>When the STEP1_RESPONSE event is received, the session is considered established.  This machine will then
+    
+
+    When the STEP1_RESPONSE event is received, the session is considered established.  This machine will then
     return the parent's SESSION_ESTABLISHED message and move to its IDLE state.
-    </p>
+    
     </p>
 <table class='machine_stats'>
 	<tbody>

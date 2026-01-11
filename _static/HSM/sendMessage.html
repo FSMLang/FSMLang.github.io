@@ -13,15 +13,19 @@
 </head><body>
 <h2>hsmCommunicator::sendMessage</h2>
 <p>
-    <p>Send a message to the peer.
-    </p>
-    <p>Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
+
+    Send a message to the peer.
+    
+
+    Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
     from the IDLE state, transitioning to the AWAITING_ACK state immediately thereafter.
-    </p>
-    <p>In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
+    
+
+    In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
     and transitions to the IDLE state.  Checking the queue can return the SEND_MESSAGE event, which will be handled
     from the IDLE state, thus resulting in a transmission and return to the AWAITING_ACK state.
-    </p>
+    
+
     </p>
 <table class='machine_stats'>
 	<tbody>
@@ -208,15 +212,19 @@
 <td class="label">sendMessage</td>
 <td>
 
-    <p>Send a message to the peer.
-    </p>
-    <p>Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
+
+    Send a message to the peer.
+    
+
+    Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
     from the IDLE state, transitioning to the AWAITING_ACK state immediately thereafter.
-    </p>
-    <p>In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
+    
+
+    In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
     and transitions to the IDLE state.  Checking the queue can return the SEND_MESSAGE event, which will be handled
     from the IDLE state, thus resulting in a transmission and return to the AWAITING_ACK state.
-    </p>
+    
+
     
 <p>Handles an event shared from hsmCommunicator</p>
 
