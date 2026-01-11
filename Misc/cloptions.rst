@@ -2,8 +2,7 @@
 Usage and Command Line Options
 ==============================
 
-
-.. option:: Usage : fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
+.. option:: Usage : /mnt/c/GitHub/NewFSMLang/linux/fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
 
 .. option:: 'c'
 
@@ -49,7 +48,7 @@ Usage and Command Line Options
 
 .. option:: -c
 
-	will create a more compact event/state table when -tc is used	with machines having actions which return states
+	will create a more compact event/state table when -tc is used	with machines having actions which return events.	When used with -ts and machines having actions which do not return states,	the switch machine will not use a state function array.
 
 
 
@@ -218,4 +217,5 @@ Usage and Command Line Options
 .. option:: -v
 
 	prints the version and exits
+
 
