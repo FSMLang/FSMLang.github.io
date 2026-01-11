@@ -66,7 +66,7 @@ welcomed, both for language and for documentation improvements.  Use the *issue*
 The repos are at `Language <https://github.com/FSMLang/FSMLang>`_
 and `Documents <https://github.com/FSMLang/FSMLang.github.io>`_.
 
-`Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.
+The latest version is 2.1. `Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.
 
 This documentation presents language concepts primarily through two examples, :doc:`Simple/simpleindex`,
 and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data for both machines and events, and

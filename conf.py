@@ -9,8 +9,8 @@ import sys
 import os
 
 project = 'FSMLang'
-version = '1.47'
-copyright = '2025, The Maintainers'
+version = '2.1'
+copyright = '2025-2026, The Maintainers'
 author = 'The Maintainers'
 
 # -- General configuration ---------------------------------------------------
