@@ -13,17 +13,22 @@
 </head><body>
 <h2>hsmCommunicator</h2>
 <p>
-<p>This machine manages communications using a "stop and wait" protocol. Only one message is allowed to be outstanding.</p>
-<p>Before any message can be exchanged, however, a session must be established with the peer. Establishing a connection
+This machine manages communications using a "stop and wait" protocol. Only one message is allowed to be outstanding.
+
+Before any message can be exchanged, however, a session must be established with the peer. Establishing a connection
 requires several exchanges to authenticate. The session will remain active as long as messages continue to be
-exchanged with a minimum frequency.</p>
-<p>The user of this machine calls run_hsmCommunicator, passing the SEND_MESSAGE event.  For the first message,
+exchanged with a minimum frequency.
+
+The user of this machine calls run_hsmCommunicator, passing the SEND_MESSAGE event.  For the first message,
 the machine will be IDLE, and thus needs to queue the message, start the establishSession machine, and transition
-to the ESTABLISHING_SESSION state.  Requests to send messages received in this state will simply be queued. </p>
-<p>While the top level machine is in the ESTABLISHING_SESSION state, the establishSession machine does the establishment work.</p>
-<p>When the establishSession machine receives the STEP1_RESPONSE event, it reports to the top level machine that
+to the ESTABLISHING_SESSION state.  Requests to send messages received in this state will simply be queued. 
+
+While the top level machine is in the ESTABLISHING_SESSION state, the establishSession machine does the establishment work.
+
+When the establishSession machine receives the STEP1_RESPONSE event, it reports to the top level machine that
 the session is established by returning the parent's SESSION_ESTABLISHED event.  This will move the top level
-machine to its IN_SESSION state and cause it to send the message(s) which are enqueued.</p>
+machine to its IN_SESSION state and cause it to send the message(s) which are enqueued.
+
 </p>
 <table class='machine_stats'>
 	<tbody>
@@ -369,31 +374,38 @@ machine to its IN_SESSION state and cause it to send the message(s) which are en
 <td class="label"><a href="establishSession.html" target="FSMLang-establishSession">establishSession</a></td>
 <td>
 
-    <p>Establish a connection with the peer.
-    </p>
-    <p>Two messages must be exchanged with the peer to successfully establish the session.  The machine needs
+
+    Establish a connection with the peer.
+    
+
+    Two messages must be exchanged with the peer to successfully establish the session.  The machine needs
     only two states, IDLE and AWAITING_RESPONSE since the top level machine tracks whether or not it is in a
     session.  The AWAITING_RESPONSE state serves for both required messages, since the receipt of each message produces
     a unique event.
-    </p>
-    <p>When the STEP1_RESPONSE event is received, the session is considered established.  This machine will then
+    
+
+    When the STEP1_RESPONSE event is received, the session is considered established.  This machine will then
     return the parent's SESSION_ESTABLISHED message and move to its IDLE state.
-    </p>
+    
     </td>
 </tr>
 <tr>
 <td class="label"><a href="sendMessage.html" target="FSMLang-sendMessage">sendMessage</a></td>
 <td>
 
-    <p>Send a message to the peer.
-    </p>
-    <p>Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
+
+    Send a message to the peer.
+    
+
+    Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
     from the IDLE state, transitioning to the AWAITING_ACK state immediately thereafter.
-    </p>
-    <p>In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
+    
+
+    In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
     and transitions to the IDLE state.  Checking the queue can return the SEND_MESSAGE event, which will be handled
     from the IDLE state, thus resulting in a transmission and return to the AWAITING_ACK state.
-    </p>
+    
+
     </td>
 </tr>
 </tbody>

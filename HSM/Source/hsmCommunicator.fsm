@@ -72,89 +72,11 @@ unsigned queue_count = 0;
     */
     state IN_SESSION;
 
-    /**
+    /* Include the establishSession sub machine. */
+    include establishSession.fsms
 
-    Establish a connection with the peer.
-    
-
-    Two messages must be exchanged with the peer to successfully establish the session.  The machine needs
-    only two states, IDLE and AWAITING_RESPONSE since the top level machine tracks whether or not it is in a
-    session.  The AWAITING_RESPONSE state serves for both required messages, since the receipt of each message produces
-    a unique event.
-    
-
-    When the STEP1_RESPONSE event is received, the session is considered established.  This machine will then
-    return the parent's SESSION_ESTABLISHED message and move to its IDLE state.
-    
-    */
-    machine establishSession
-    {
-    event ESTABLISH_SESSION_REQUEST, STEP0_RESPONSE, STEP1_RESPONSE;
-    event parent::MESSAGE_RECEIVED;
-
-    state IDLE, AWAITING_RESPONSE;
-
-    /** Start the session establishment process. */
-    action sendStep0Message[ESTABLISH_SESSION_REQUEST, IDLE]  transition AWAITING_RESPONSE;
-
-    /** Continue session establisment */
-    action sendStep1Message[STEP0_RESPONSE, AWAITING_RESPONSE];
-
-    /** Notify parent that session is established. */
-    action notifyParent[STEP1_RESPONSE, AWAITING_RESPONSE] transition IDLE;
-
-    /** Parse the incoming message */
-    action parseMessage[MESSAGE_RECEIVED, AWAITING_RESPONSE];
-
-    /* these lines are informational; they affect the html output, but do not affect any C code generated. */
-    sendStep0Message returns noEvent;
-        
-    sendStep1Message returns noEvent;
-        
-    notifyParent     returns parent::SESSION_ESTABLISHED;
-
-    parseMessage returns STEP0_RESPONSE, STEP1_RESPONSE, noEvent;
-    }
-
-    /**
-
-    Send a message to the peer.
-    
-
-    Since the protocol allows only one message to be outsanding, the machine dequeues and transmits a message only
-    from the IDLE state, transitioning to the AWAITING_ACK state immediately thereafter.
-    
-
-    In the AWAITNG_ACK state, incomming messages are parsed and, when an ACK is found, the machine checks the queue
-    and transitions to the IDLE state.  Checking the queue can return the SEND_MESSAGE event, which will be handled
-    from the IDLE state, thus resulting in a transmission and return to the AWAITING_ACK state.
-    
-
-    */
-    machine sendMessage
-    {
-    event	parent::SEND_MESSAGE
-                , parent::MESSAGE_RECEIVED
-                , ACK;
-
-    state	IDLE, AWAITING_ACK;
-
-    /** Dequeue and transmit message to the peer. */
-    action	sendMessage[SEND_MESSAGE,IDLE] transition AWAITING_ACK;
-
-    /** Check queue for messages; if found return SEND_MESSAGE; otherwise, return noEvent. */
-    action	checkQueue[ACK,AWAITING_ACK]          transition IDLE;
-
-    action      parseMessage[MESSAGE_RECEIVED, AWAITING_ACK];
-
-    /* these lines are informational; they affect the html output, but do not affect any C code generated. */
-    sendMessage  returns noEvent;
-        
-    checkQueue   returns SEND_MESSAGE, noEvent;
-
-    parseMessage returns ACK, noEvent;
-
-    }
+    /* Include the sendMessage sub machine. */
+    include sendMessage.fsms
 
     /* these are actions of the top level machine */
 

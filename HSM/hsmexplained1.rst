@@ -262,6 +262,12 @@ Here, then, is the final skeleton:
 
 	}
 
+.. note::
+
+	FSMLang is perfectly happy to have sub-machine source in the same file as the top-level machine, as seen in the skeleton.  However,
+	this can make for very long files.  To aleviate this, the :code:`include` keyword can be used to insert external files into the source
+	exactly as if their contents were present at the point of inclusion.
+
 The next pages flesh out each machine with the actions and transitions which make them perform.  Each machine is treated on its own page,
-even though all exist together in a single .fsm source file.
+reflecting the use of the :fsmlang:`include` keyword in the top-level source.
 
