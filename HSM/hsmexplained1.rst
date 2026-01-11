@@ -263,5 +263,5 @@ Here, then, is the final skeleton:
 	}
 
 The next pages flesh out each machine with the actions and transitions which make them perform.  Each machine is treated on its own page,
-even though all exist together in a single .fsm source file.
+reflecting the use of the :fsmlang:`include` keyword in the top-level source.
 
