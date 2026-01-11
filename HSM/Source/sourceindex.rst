@@ -8,6 +8,8 @@ These pages show the full source of the fsm and generated c and h files.
 	:maxdepth: 1
 
 	hsmsrc
+	sendmessagesrc
+	establishsessionsrc
 	hsmcodec
 	hsmcodeh
 	hsmevent
