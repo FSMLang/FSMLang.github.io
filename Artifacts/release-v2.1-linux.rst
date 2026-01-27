@@ -3,8 +3,8 @@ Release v2.1 (Linux)
 
 Release name: Version 2.1
 Tag: v2.1
-Commit: 11a71ace9525666f676ebbccf7f39a8415568bef
-Build time (UTC): 2026-01-27T03:35:24Z
+Commit: 2501d26faee0504f74f176e834f7c36a4e13da94
+Build time (UTC): 2026-01-27T03:56:22Z
 
 Assets
 ------
@@ -17,7 +17,7 @@ Assets
 - Linux metadata signature (optional): fsm-v2.1-linux.meta.txt.asc
 
 Download URLs (GitHub release assets)
-------------------------------------
+-------------------------------------
 
 - Linux binary: https://github.com/FSMLang/FSMLang/releases/download/v2.1/fsm-v2.1-linux
 - Linux checksum: https://github.com/FSMLang/FSMLang/releases/download/v2.1/fsm-v2.1-linux.sha256
