@@ -1,6 +1,6 @@
-================
+=====================
 establishSession.fsms
-================
+=====================
 
 :download:`Download <../Source/establishSession.fsms>`
 
