@@ -2,6 +2,8 @@
 Usage and Command Line Options
 ==============================
 
+
+
 .. option:: Usage : /mnt/c/GitHub/NewFSMLang/linux/fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
 
 .. option:: 'c'
@@ -88,7 +90,7 @@ Usage and Command Line Options
 
 .. option:: --include-svg-img<=*true|false>
 
-	adds <img/> tag referencing <filename>.svg to include an image at	the top of the web page.
+	adds <img/> tag referencing <filename>.svg to include an image at	the top of the web page.  This is incompatible with --include-uml-objects.
 
 
 
@@ -214,8 +216,13 @@ Usage and Command Line Options
 
 
 
+.. option:: --include-uml-objects<=*true|false>
+
+	 uses sphinx ..uml:: directive referencing <filename>.plantuml to	show plantuml diagrams. This is incompatible with --include-svg-img.
+
+
+
 .. option:: -v
 
 	prints the version and exits
-
 
