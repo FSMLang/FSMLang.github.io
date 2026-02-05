@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Get java
-        run: sudo apt-get install default-jre
+        run: sudo apt-get install default-jre --fix-missing
 
       - name: Get PlantUML
         run: sudo apt-get install plantuml
