@@ -18,10 +18,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
       - name: Get PlantUML
-        run: sudo apt-get install plantuml
+        run: |
+          sudo apt-get update
+          sudo apt-get install plantuml
 
       - name: Get Sphinx Stuff
         run: pip install -r requirements.txt
