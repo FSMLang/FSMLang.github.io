@@ -13,6 +13,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ needs.resolve-upload-url.outputs.tag }}
+          fetch-depth: 0
 
       - name: Get java
         uses: actions/setup-java@v4
