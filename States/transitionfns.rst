@@ -253,3 +253,35 @@ At the top-level, we have merely to add the *clearQueue* action:
 	    return THIS(noEvent);
 	}
 
+-------------------------------------
+When Compact Switch Code is Generated
+-------------------------------------
+
+In the case that compact C switch code is generated (:code:`-ts -c`), guard functions return a struct containing
+both the new state and the new state function.  New convinience macros are provided to facilitate implementing
+guard functions which can be used with all C output variants, illustrated in the following vacuous guard.
+
+.. code-block:: c
+   :emphasize-lines: 8,11
+
+   TR_FN_RETURN_TYPE m1_guard2(pM1 pfsm, M1_EVENT_ENUM e)
+   {
+      (void) e;
+      (void) pfsm;
+   
+      DBG_PRINTF("%s", __func__);
+      
+      DECLARE_TR_FN_RET_VAR(trfnret, s4);
+      
+      if (pfsm->data.field1 == 1)
+         RETURN_STATE(trfnret, s1);
+      
+      return trfnret;
+   }
+
+:code:`DECLARE_TR_FN_RET_VAR(trfnret, s4)` both declares trfnret to be a variable of the appropriate type, and
+initializes it to STATE(s4).  :code:`RETURN_STATE(trfnret, s1)` changes that value to STATE(s1). 
+
+Note that since the macro is creating a variable declaration and is string pasting, only legal variable names
+can be used as the first argument and the second must be a machine state name.
+
