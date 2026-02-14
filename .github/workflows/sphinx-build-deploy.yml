@@ -73,6 +73,7 @@ jobs:
           fi
 
   build:
+    needs: resolve-upload-url
     runs-on: ubuntu-latest
 
     steps:
