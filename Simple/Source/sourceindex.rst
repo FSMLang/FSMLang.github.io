@@ -12,3 +12,4 @@ Sources
 	ActionArray/sourceindex
 	StateFunctionArray/sourceindex
 	EventFunctionArray/sourceindex
+	SingleSwitch/sourceindex
