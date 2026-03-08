@@ -2,7 +2,8 @@
 Sources
 =======
 
-These pages show the full source of the fsm and generated c and h files.
+These pages show the full source of the fsm and generated c and h files.  The ``-tc`` option was
+used.
 
 .. toctree::
 	:maxdepth: 1
