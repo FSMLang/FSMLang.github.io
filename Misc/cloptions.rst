@@ -4,6 +4,8 @@ Usage and Command Line Options
 
 
 
+
+
 .. option:: Usage : /mnt/c/GitHub/NewFSMLang/linux/fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
 
 .. option:: 'c'
@@ -20,7 +22,13 @@ Usage and Command Line Options
 
 .. option:: 'e'
 
-	gets you c code output with a table of functions for each event using switch constructions,
+	gets you c code output with a table of functions for each event,
+
+
+
+.. option:: 'ss'
+
+	gets you c code output with a single switch combining the event and state,
 
 
 
@@ -67,6 +75,16 @@ Usage and Command Line Options
 .. option:: --generate-weak-fns=false
 
 	suppresses the generation of weak function stubs.
+
+.. option:: --add-doxygen-blocks=<true|false*>
+
+	Doxygen headers will be added to user	function declarations and to the machine header files (<machine>.h and <sub-machine_priv>.h).
+
+
+
+.. option:: --weak-fns-separate-file=<true|false*>
+
+	Weak functions, if generated, will be put into a separate file.
 
 .. option:: --short-user-fn-names=true
 

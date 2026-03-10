@@ -60,13 +60,16 @@ clear.  Nevertheless, a UML state chart or a simple HTML event-state action matr
 visualization.  FSMLang can output both HTML and PlantUML to assist in visualizing and documenting the state machine.
 For somewhat more formal documentation, ReStructuredText output is available, as well.
 
+Additionally, if requested, the document comments put into the .fsm file will be placed into the generated C output as doxygen
+blocks.
+
 Both the language and this documentation are intended to assist in the design of useful state machines.  Feedback is
 welcomed, both for language and for documentation improvements.  Use the *issue* mechanisms in either GitHub repo.
 
 The repos are at `Language <https://github.com/FSMLang/FSMLang>`_
 and `Documents <https://github.com/FSMLang/FSMLang.github.io>`_.
 
-The latest version is 2.2.2. `Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.  A list of released artifacts is at :doc:`Artifacts/release-index`.
+The latest version is 2.3. `Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.  A list of released artifacts is at :doc:`Artifacts/release-index`.
 
 This documentation presents language concepts primarily through two examples, :doc:`Simple/simpleindex`,
 and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data for both machines and events, and
