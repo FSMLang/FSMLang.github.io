@@ -27,8 +27,9 @@ events handed it.
 .. admonition:: "Any general programming language"
 	:class: sidebar
 
-	Presently, FSMLang only supports the C programming language.  It is left as an exercise to the reader to
-	develop support for other languages.  The FSMLang maintainers will supply what help is needed.
+	Presently, FSMLang supports the C programming language, and, to a limited extent, Python.  It is left as an
+	exercise to the reader to develop support for other languages.  The FSMLang maintainers will supply what
+	help is needed.
 
 The created state machine contains a single state variable, which should not be manipulated by any user-written
 function. This variable is maintained on the heap, not on the machine's function call stack. This means that
@@ -69,7 +70,7 @@ welcomed, both for language and for documentation improvements.  Use the *issue*
 The repos are at `Language <https://github.com/FSMLang/FSMLang>`_
 and `Documents <https://github.com/FSMLang/FSMLang.github.io>`_.
 
-The latest version is 2.3. `Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.  A list of released artifacts is at :doc:`Artifacts/release-index`.
+The latest version is 2.4. `Revision history <_static/release_notes.html>`_ is maintained for the curious, and for those who support medical device development tool validation.  A list of released artifacts is at :doc:`Artifacts/release-index`.
 
 This documentation presents language concepts primarily through two examples, :doc:`Simple/simpleindex`,
 and :doc:`HSM/hsmindex`.  :doc:`Data/dataindex` shows how FSMLang handles data for both machines and events, and
@@ -90,6 +91,7 @@ in :doc:`Sequences/index`.
 	Data/dataindex
 	States/stateindex
 	Sequences/index
+	Python/index
 	Misc/instances
 	Misc/cloptions
 	Artifacts/release-index

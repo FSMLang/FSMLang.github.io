@@ -4,9 +4,7 @@ Usage and Command Line Options
 
 
 
-
-
-.. option:: Usage : /mnt/c/GitHub/NewFSMLang/linux/fsm [-tc|s|e|h|p|r] [-o outfile] <filename>.fsm
+.. option:: Usage : /mnt/c/GitHub/NewFSMLang/linux/fsm [-tc|s|ss|e|h|p|py|r] [-o outfile] <filename>.fsm
 
 .. option:: 'c'
 
@@ -29,6 +27,12 @@ Usage and Command Line Options
 .. option:: 'ss'
 
 	gets you c code output with a single switch combining the event and state,
+
+
+
+.. option:: 'py'
+
+	gets you python output based on the PyTransitions package,
 
 
 
@@ -237,6 +241,24 @@ Usage and Command Line Options
 .. option:: --include-uml-objects<=*true|false>
 
 	 uses sphinx ..uml:: directive referencing <filename>.plantuml to	show plantuml diagrams. This is incompatible with --include-svg-img.
+
+
+
+.. option:: --find-on-top-level-machine-data=<true*|false>
+
+	Return file name iff the top-level machine has data.	Useful only with -M -s.  Only one --find-on... option allowed.
+
+
+
+.. option:: --find-on-event-data=<true*|false>
+
+	Return file name iff at least one event has data.	Useful only with -M -s.  Only one --find-on... option allowed.
+
+
+
+.. option:: --find-on-sub-machine-depth=[int]
+
+	Return file name iff the top-level sub-machine depth matches.	Useful only with -M -s.  Only one --find-on... option allowed.
 
 
 
