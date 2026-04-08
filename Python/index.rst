@@ -13,6 +13,8 @@ contain the necessary user functions in the native impl prologue block; otherwis
 
 ``-M`` and ``-Md`` are also supported, providing the expected output.
 
+Only flat machines are supported at this time.
+
 -------
 Nuances
 -------
