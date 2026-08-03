@@ -12,6 +12,9 @@ FSMLang: Better State Machine Design
 
 	Version 2.0 was released in November of 2025.  The bump in the major version reflects an incompatibility in the generated
 	API for data translation functions.  See :doc:`Misc/instances` for a complete description of the change and its motivation.
+	Reading that section should provide sufficient understanding of the differences in generated code to make any required
+	updates to user code; thus, no other examples have been updated.
+	
 
 FSMLang is was created to allow design work in the problem space of finite state machines without the encumbrances of
 any particular implementation language. Thus, FSMLang is implemented as a "pre-processor," generating code in any
